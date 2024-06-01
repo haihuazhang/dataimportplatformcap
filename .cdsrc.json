@@ -1,0 +1,13 @@
+{
+    "build": {
+        "target": "."
+    },
+    "features": {
+        "fiori_preview": true
+    },
+    "requires": {
+        "db": {
+            "kind": "hana"
+        }
+    }
+}

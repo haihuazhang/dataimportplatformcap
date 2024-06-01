@@ -1,0 +1,2 @@
+constraint JOB_INST_UN
+on BATCH_JOB_INSTANCE unique (JOB_NAME, JOB_KEY)

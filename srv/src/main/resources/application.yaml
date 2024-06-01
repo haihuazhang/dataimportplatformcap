@@ -1,0 +1,52 @@
+# ---
+spring:
+  profiles:
+    active: hybrid
+# ---
+# spring:
+# #   config.activate.on-profile: default
+#   # sql.init.schema-locations: classpath:schema-h2.sql
+#   config:
+#     activate:
+#       on-profile:
+#       - dev
+  # datasource:
+  #   url: "jdbc:sqlite:db.sqlite"
+  #   driver-class-name: org.sqlite.JDBC
+  #   hikari:
+  #     maximum-pool-size: 10
+---
+spring:
+  web.resources.static-locations: "file:./app"
+  config:
+    activate:
+      on-profile: hybrid    
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      platform: sapdb
+      initialize-schema: NEVER
+
+    
+  # profiles:
+  #   active: cloud 
+cds:
+  dataSource:
+    auto-config.enabled: true
+#     xxx-db:
+#       maximum-pool-size: 100
+
+
+# ---
+# spring:
+#   config:
+#     activate:
+#       on-profile:
+#       - prod
+# cds:
+#   dataSource:
+#     auto-config.enabled: true
+#     xxx-db:
+#       maximum-pool-size: 100
+
+

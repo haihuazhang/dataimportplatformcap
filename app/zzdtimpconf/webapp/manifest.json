@@ -1,0 +1,149 @@
+{
+  "_version": "1.49.0",
+  "sap.app": {
+    "id": "zzdtimpconf",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.10.6",
+      "toolsId": "c7fb4dc7-441d-44e4-9686-ba56781c7bea"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/DataImportService/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "zzdtimpconf-manage": {
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "semanticObject": "zzdtimpconf",
+          "action": "manage"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.120.9",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ushell": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "zzdtimpconf.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "BatchImportConfigList",
+          "target": "BatchImportConfigList"
+        },
+        {
+          "pattern": "BatchImportConfig({key}):?query:",
+          "name": "BatchImportConfigObjectPage",
+          "target": "BatchImportConfigObjectPage"
+        }
+      ],
+      "targets": {
+        "BatchImportConfigList": {
+          "type": "Component",
+          "id": "BatchImportConfigList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "entitySet": "BatchImportConfig",
+              "variantManagement": "Page",
+              "navigation": {
+                "BatchImportConfig": {
+                  "detail": {
+                    "route": "BatchImportConfigObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "BatchImportConfigObjectPage": {
+          "type": "Component",
+          "id": "BatchImportConfigObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "entitySet": "BatchImportConfig"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}

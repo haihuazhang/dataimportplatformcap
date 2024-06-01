@@ -1,0 +1,132 @@
+{
+  "services": {
+    "LaunchPage": {
+      "adapter": {
+        "config": {
+          "catalogs": [],
+          "groups": [
+            {
+              "id": "zzdtimpconf",
+              "title": "Manage Batch Import Configuration",
+              "isPreset": true,
+              "isVisible": true,
+              "isGroupLocked": false,
+              "tiles": [
+                {
+                  "id": "zzdtimpconf-manage",
+                  "tileType": "sap.ushell.ui.tile.StaticTile",
+                  "properties": {
+                    "targetURL": "#zzdtimpconf-manage",
+                    "title": "Manage Batch Import Configuration",
+                    "description": "Manage Batch Import Configuration"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "zzdtimpfile-manage",
+              "title": "Manage Batch Import File",
+              "isPreset": true,
+              "isVisible": true,
+              "isGroupLocked": false,
+              "tiles": [
+                {
+                  "id": "zzdtimpfile-manage",
+                  "tileType": "sap.ushell.ui.tile.StaticTile",
+                  "properties": {
+                    "targetURL": "#zzdtimpfile-manage",
+                    "title": "Manage Batch Import File",
+                    "description": "Manage Batch Import File"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "zzdtimplog-display",
+              "title": "Display Import Files Log",
+              "isPreset": true,
+              "isVisible": true,
+              "isGroupLocked": false,
+              "tiles": [
+                {
+                  "id": "zzdtimplog-display",
+                  "tileType": "sap.ushell.ui.tile.StaticTile",
+                  "properties": {
+                    "targetURL": "#zzdtimplog-display",
+                    "title": "Display Import Files Log",
+                    "description": "Display Import Files Log"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "NavTargetResolution": {
+      "config": {
+        "enableClientSideTargetResolution": true
+      }
+    },
+    "ClientSideTargetResolution": {
+      "adapter": {
+        "config": {
+          "inbounds": {
+            "browse-books": {
+              "semanticObject": "Books",
+              "action": "display",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=bookshop",
+                "url": "/browse/webapp"
+              }
+            },
+            "zzdtimpconf-manage":{
+              "semanticObject": "zzdtimpconf",
+              "action": "manage",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=zzdtimpconf",
+                "url": "/zzdtimpconf/webapp"
+              }
+            },
+            "zzdtimpfile-manage":{
+              "semanticObject": "zzdtimpfile",
+              "action": "manage",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=zzdtimpfile",
+                "url": "/zzdtimpfile/webapp"
+              }
+            },
+            "zzdtimplog-display":{
+              "semanticObject": "zzdtimplog",
+              "action": "display",
+              "signature": {
+                "parameters": {},
+                "additionalParameters": "allowed"
+              },
+              "resolutionResult": {
+                "applicationType": "SAPUI5",
+                "additionalInformation": "SAPUI5.Component=zzdtimplog",
+                "url": "/zzdtimplog/webapp"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
