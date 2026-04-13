@@ -11,7 +11,7 @@
     "app/zzdtimplog"
   ],
   "devDependencies": {
-    "@sap/cds-dk": "^9.7.2",
+    "@sap/cds-dk": "9.8.3",
     "@sap/ux-specification": "^1.120.5"
   }
 }
