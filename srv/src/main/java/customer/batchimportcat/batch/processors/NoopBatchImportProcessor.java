@@ -1,13 +1,13 @@
 package customer.batchimportcat.batch.processors;
 
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import customer.batchimportcat.batch.dynamic.BatchImportProcessContext;
+import customer.batchimportcat.batch.dynamic.BatchImportProcessPayload;
 import customer.batchimportcat.batch.dynamic.BatchImportProcessResult;
 import customer.batchimportcat.batch.dynamic.BatchImportProcessor;
-import customer.batchimportcat.batch.dynamic.DynamicNode;
+import customer.batchimportcat.batch.dynamic.DynamicRow;
+import customer.batchimportcat.batch.dynamic.DynamicTable;
 
 @Component
 public class NoopBatchImportProcessor implements BatchImportProcessor {
@@ -22,11 +22,13 @@ public class NoopBatchImportProcessor implements BatchImportProcessor {
     }
 
     @Override
-    public BatchImportProcessResult process(BatchImportProcessContext context, List<DynamicNode> items) {
+    public BatchImportProcessResult process(BatchImportProcessContext context, BatchImportProcessPayload payload) {
         BatchImportProcessResult result = new BatchImportProcessResult();
-        for (DynamicNode item : items) {
-            result.addSuccess(item.getLineNumber(),
-                    "NOOP processor accepted root node from structure " + item.getStructureName() + ".");
+        for (DynamicTable rootTable : payload.rootTables()) {
+            for (DynamicRow row : rootTable) {
+                result.addSuccess(row.getLineNumber(),
+                        "NOOP processor accepted root row from structure " + row.getStructureName() + ".");
+            }
         }
         return result;
     }

@@ -1,7 +1,5 @@
 package customer.batchimportcat.batch.dynamic;
 
-import java.util.List;
-
 public interface BatchImportProcessor {
     String getProcessKey();
 
@@ -9,5 +7,5 @@ public interface BatchImportProcessor {
         return getProcessKey();
     }
 
-    BatchImportProcessResult process(BatchImportProcessContext context, List<DynamicNode> items);
+    BatchImportProcessResult process(BatchImportProcessContext context, BatchImportProcessPayload payload);
 }

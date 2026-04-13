@@ -20,6 +20,7 @@ import com.sap.cds.services.cds.CqnService;
 
 import cds.gen.dataimportservice.DataImportService_;
 import customer.batchimportcat.batch.dynamic.BatchImportProcessorRegistry;
+import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
 import customer.batchimportcat.batch.dynamic.DynamicHierarchyItemReader;
 import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.DynamicNode;
@@ -68,8 +69,10 @@ public class BatchImportJobConfiguration {
             @Value("#{jobExecutionContext['dynamicConfig']}") DynamicImportConfiguration dynamicConfig,
             @Value("#{jobParameters['fileUUID']}") String fileUUID,
             BatchImportProcessorRegistry processorRegistry,
-            @Qualifier(DataImportService_.CDS_NAME) CqnService dataImportService) {
-        return new ProcessKeyDelegatingItemWriter(dynamicConfig, fileUUID, processorRegistry, dataImportService);
+            @Qualifier(DataImportService_.CDS_NAME) CqnService dataImportService,
+            DynamicDataFactory dynamicDataFactory) {
+        return new ProcessKeyDelegatingItemWriter(dynamicConfig, fileUUID, processorRegistry, dataImportService,
+                dynamicDataFactory);
     }
 
     @Bean

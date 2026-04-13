@@ -2,6 +2,7 @@ package customer.batchimportcat.batch.dynamic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,21 +35,26 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode>, 
     private final String fileUUID;
     private final BatchImportProcessorRegistry processorRegistry;
     private final CqnService dataImportService;
+    private final DynamicDataFactory dynamicDataFactory;
 
     private BatchImportProcessor processor;
+    private BatchImportProcessContext processContext;
     private boolean hasErrors;
 
     public ProcessKeyDelegatingItemWriter(DynamicImportConfiguration configuration, String fileUUID,
-            BatchImportProcessorRegistry processorRegistry, CqnService dataImportService) {
+            BatchImportProcessorRegistry processorRegistry, CqnService dataImportService,
+            DynamicDataFactory dynamicDataFactory) {
         this.configuration = configuration;
         this.fileUUID = fileUUID;
         this.processorRegistry = processorRegistry;
         this.dataImportService = dataImportService;
+        this.dynamicDataFactory = dynamicDataFactory;
     }
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
         processor = processorRegistry.getRequired(configuration.processKey());
+        processContext = buildProcessContext();
         updateStatus("R", "Running", 2);
     }
 
@@ -70,11 +76,26 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode>, 
         }
 
         saveOriginalData(items);
-        BatchImportProcessResult result = processor.process(new BatchImportProcessContext(fileUUID, configuration), items);
+        BatchImportProcessPayload payload = processContext.createPayload(items);
+        BatchImportProcessResult result = processor.process(processContext, payload);
         if (result != null) {
             saveMessages(result.getMessages());
             hasErrors = hasErrors || result.hasErrors();
         }
+    }
+
+    private BatchImportProcessContext buildProcessContext() {
+        Map<String, DynamicTableHandle> handlesByStructureUUID = dynamicDataFactory.createHandles(configuration);
+        Map<String, DynamicTableHandle> handlesByStructureName = new LinkedHashMap<>();
+        for (DynamicTableHandle handle : handlesByStructureUUID.values()) {
+            handlesByStructureName.put(handle.structureName(), handle);
+        }
+        return new BatchImportProcessContext(
+                fileUUID,
+                configuration,
+                handlesByStructureUUID,
+                Map.copyOf(handlesByStructureName),
+                dynamicDataFactory);
     }
 
     private void saveOriginalData(List<DynamicNode> items) throws JsonProcessingException {
