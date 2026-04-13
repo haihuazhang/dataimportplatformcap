@@ -25,4 +25,17 @@ public class DynamicRow extends LinkedHashMap<String, Object> implements Seriali
     public int getLineNumber() {
         return lineNumber;
     }
+
+    public DynamicTable getRequiredChildTable(String childStructureName) {
+        Object childTable = get(childStructureName);
+        if (childTable == null) {
+            throw new IllegalArgumentException(
+                    "No child table found for structure " + childStructureName + " in row " + lineNumber + ".");
+        }
+        if (!(childTable instanceof DynamicTable dynamicTable)) {
+            throw new IllegalStateException(
+                    "Child value " + childStructureName + " is not a DynamicTable in row " + lineNumber + ".");
+        }
+        return dynamicTable;
+    }
 }
