@@ -80,11 +80,9 @@ public class DynamicHierarchyItemReader implements ItemStreamReader<DynamicNode>
     private void buildHierarchy() throws IOException {
         try (Workbook workbook = WorkbookFactory.create(new ByteArrayInputStream(fileContent))) {
             Map<String, List<DynamicNode>> nodesByStructure = new HashMap<>();
-            Map<String, DynamicStructureDefinition> structuresById = new HashMap<>();
             Map<String, List<DynamicStructureDefinition>> childStructuresByParentSheet = new HashMap<>();
 
             for (DynamicStructureDefinition structure : configuration.sortedStructures()) {
-                structuresById.put(structure.id(), structure);
                 nodesByStructure.put(structure.id(), readStructureRows(workbook, structure));
                 if (structure.sheetNameUp() != null && !structure.sheetNameUp().isBlank()) {
                     childStructuresByParentSheet.computeIfAbsent(structure.sheetNameUp(), ignored -> new ArrayList<>())
