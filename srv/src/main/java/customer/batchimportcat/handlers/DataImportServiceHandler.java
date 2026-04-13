@@ -5,176 +5,169 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
-// import java.lang.reflect.InvocationTargetException;
 import java.util.stream.Stream;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
-// import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
-import com.sap.cds.services.handler.EventHandler;
-import com.sap.cds.services.handler.annotations.After;
-import com.sap.cds.services.handler.annotations.On;
-import com.sap.cds.services.handler.annotations.ServiceName;
-import cds.gen.dataimportservice.BatchImportFile;
-import cds.gen.dataimportservice.BatchImportFile_;
-import cds.gen.dataimportservice.DataImportService_;
-import cds.gen.dataimportservice.ImplementedByClass;
-import cds.gen.dataimportservice.ImplementedByClass_;
-
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.Reflection;
 import com.sap.cds.Result;
 import com.sap.cds.ResultBuilder;
-import com.sap.cds.ql.cqn.AnalysisResult;
-import com.sap.cds.ql.cqn.CqnAnalyzer;
+import com.sap.cds.ql.Update;
 import com.sap.cds.ql.cqn.CqnPredicate;
 import com.sap.cds.ql.cqn.CqnSelect;
+import com.sap.cds.ql.cqn.CqnUpdate;
 import com.sap.cds.reflect.CdsModel;
 import com.sap.cds.reflect.CdsStructuredType;
 import com.sap.cds.services.cds.CdsReadEventContext;
 import com.sap.cds.services.cds.CqnService;
+import com.sap.cds.services.handler.EventHandler;
+import com.sap.cds.services.handler.annotations.After;
+import com.sap.cds.services.handler.annotations.On;
+import com.sap.cds.services.handler.annotations.ServiceName;
 
-import cds.gen.dataimportservice.ImportStructure_;
-import customer.batchimportcat.utils.CheckDataVisitor;
-import customer.batchimportcat.utils.ClassReflection;
-import customer.batchimportcat.utils.UnmanagedReportUtils;
+import cds.gen.dataimportservice.BatchImportFile;
+import cds.gen.dataimportservice.BatchImportFile_;
+import cds.gen.dataimportservice.DataImportService_;
+import cds.gen.dataimportservice.ImportFieldType;
+import cds.gen.dataimportservice.ImportFieldType_;
 import cds.gen.dataimportservice.ImportStructure;
-
-import com.sap.cds.services.*;;
+import cds.gen.dataimportservice.ImportStructure_;
+import cds.gen.dataimportservice.ImplementedByClass_;
+import cds.gen.dataimportservice.ProcessKeyValueHelp;
+import cds.gen.dataimportservice.ProcessKeyValueHelp_;
+import customer.batchimportcat.batch.dynamic.BatchImportProcessorRegistry;
+import customer.batchimportcat.batch.dynamic.DynamicFieldType;
+import customer.batchimportcat.utils.CheckDataVisitor;
+import customer.batchimportcat.utils.UnmanagedReportUtils;
 
 @Component
 @ServiceName(DataImportService_.CDS_NAME)
 public class DataImportServiceHandler implements EventHandler {
-  @Autowired
-  @Qualifier("asyncJobLauncher")
-  JobLauncher jobLauncher;
+    @Qualifier("asyncJobLauncher")
+    private final JobLauncher jobLauncher;
 
-  @Autowired
-  @Qualifier("batchImportJob")
-  Job job;
+    @Qualifier("batchImportJob")
+    private final Job job;
 
-  @Autowired
-  CdsModel model;
+    private final CdsModel model;
+    private final BatchImportProcessorRegistry processorRegistry;
+    private final CqnService dataImportService;
 
-  @On(event = CqnService.EVENT_CREATE, entity = BatchImportFile_.CDS_NAME)
-  public void callBatchJob(Stream<BatchImportFile> batchImportFiles)
-  // throws JobExecutionAlreadyRunningException,
-  // JobRestartException, JobInstanceAlreadyCompleteException,
-  // JobParametersInvalidException
-  {
+    public DataImportServiceHandler(@Qualifier("asyncJobLauncher") JobLauncher jobLauncher,
+            @Qualifier("batchImportJob") Job job,
+            CdsModel model,
+            BatchImportProcessorRegistry processorRegistry,
+            @Qualifier(DataImportService_.CDS_NAME) CqnService dataImportService) {
+        this.jobLauncher = jobLauncher;
+        this.job = job;
+        this.model = model;
+        this.processorRegistry = processorRegistry;
+        this.dataImportService = dataImportService;
+    }
 
-    batchImportFiles.forEach((file) -> {
-      // jobLauncher.run(job, new JobParameters());
-      // parse fileUUID into Job Parameters
-      Map<String, JobParameter<?>> parMap = new HashMap<>();
-      parMap.put("fileUUID", new JobParameter<>(file.getId(), String.class));
+    @After(event = CqnService.EVENT_CREATE, entity = BatchImportFile_.CDS_NAME)
+    public void callBatchJob(Stream<BatchImportFile> batchImportFiles) {
+        batchImportFiles.forEach(file -> {
+            if (Boolean.FALSE.equals(file.getIsActiveEntity())) {
+                return;
+            }
 
-      try {
-        JobExecution jobExecution = jobLauncher.run(job, new JobParameters(parMap));
-        file.setJobName(jobExecution.getJobId().toString());
+            Map<String, JobParameter<?>> parameters = new HashMap<>();
+            parameters.put("fileUUID", new JobParameter<>(file.getId(), String.class));
 
-      } catch (Exception e) {
-        // TODO: handle exception
-        System.out.println(e.getMessage());
-      }
+            try {
+                JobExecution jobExecution = jobLauncher.run(job, new JobParameters(parameters));
+                updateFileExecutionInfo(file.getId(), jobExecution.getJobId().toString(), "Q", "Queued", 2);
+            } catch (Exception exception) {
+                updateFileExecutionInfo(file.getId(), null, "E", "Error", 1);
+            }
+        });
+    }
 
-    });
-  }
+    @On(event = CqnService.EVENT_READ, entity = ImportStructure_.CDS_NAME)
+    public void getAllImportStructureVH(CdsReadEventContext context) {
+        List<ImportStructure> importStructures = new ArrayList<>();
+        CqnSelect select = context.getCqn();
 
-  @On(event = CqnService.EVENT_READ, entity = ImportStructure_.CDS_NAME)
-  public void getAllImportStructureVH(CdsReadEventContext context) {
-    // Empty list of entity
-    List<ImportStructure> importStructures = new ArrayList<ImportStructure>();
+        model.structuredTypes()
+                .filter(com.sap.cds.reflect.CdsAnnotatable.byAnnotation("batchdataimport"))
+                .forEach(structure -> {
+                    ImportStructure importStructure = ImportStructure.create();
+                    importStructure.setName(structure.getName());
+                    importStructure.setDescription(structure.getAnnotationValue("title", null));
 
-    // Get CqnSelect
-    CqnSelect select = context.getCqn();
+                    CheckDataVisitor visitor = new CheckDataVisitor(importStructure);
+                    try {
+                        CqnPredicate predicate = select.where().orElseThrow();
+                        predicate.accept(visitor);
+                        if (visitor.matches()) {
+                            importStructures.add(importStructure);
+                        }
+                    } catch (Exception exception) {
+                        importStructures.add(importStructure);
+                    }
+                });
 
-    // Get structure by annotation batchdataimport
-    Stream<CdsStructuredType> structures = model.structuredTypes()
-        .filter(com.sap.cds.reflect.CdsAnnotatable.byAnnotation("batchdataimport"));
+        context.setResult(buildResult(select, importStructures));
+    }
 
-    structures.forEach((structure) -> {
-      // create entity
-      ImportStructure importStructure = ImportStructure.create();
+    @On(event = CqnService.EVENT_READ, entity = ProcessKeyValueHelp_.CDS_NAME)
+    public void getAllProcessKeys(CdsReadEventContext context) {
+        List<ProcessKeyValueHelp> rows = processorRegistry.getValueHelps().stream()
+                .map(row -> {
+                    ProcessKeyValueHelp entity = ProcessKeyValueHelp.create();
+                    entity.setProcessKey(String.valueOf(row.get("ProcessKey")));
+                    entity.setDescription(String.valueOf(row.get("Description")));
+                    return entity;
+                })
+                .toList();
+        context.setResult(buildResult(context.getCqn(), rows));
+    }
 
-      importStructure.setName(structure.getName());
-      importStructure.setDescription(structure.getAnnotationValue("title", null));
-
-      CheckDataVisitor checkDataVisitor = new CheckDataVisitor(importStructure);
-      try {
-        CqnPredicate cqnPredicate = select.where().get();
-        cqnPredicate.accept(checkDataVisitor);
-        if (checkDataVisitor.matches()) {
-          importStructures.add(importStructure);
+    @On(event = CqnService.EVENT_READ, entity = ImportFieldType_.CDS_NAME)
+    public void getAllFieldTypes(CdsReadEventContext context) {
+        List<ImportFieldType> rows = new ArrayList<>();
+        for (DynamicFieldType fieldType : DynamicFieldType.values()) {
+            ImportFieldType entity = ImportFieldType.create();
+            entity.setCode(fieldType.getCode());
+            entity.setDescription(fieldType.getDescription());
+            rows.add(entity);
         }
-      } catch (Exception e) {
-        // No where conditions
-        importStructures.add(importStructure);
-      }
+        context.setResult(buildResult(context.getCqn(), rows));
+    }
 
-    });
+    @On(event = CqnService.EVENT_READ, entity = ImplementedByClass_.CDS_NAME)
+    public void getAllImplementedByClass(CdsReadEventContext context) throws IOException {
+        context.setResult(buildResult(context.getCqn(), processorRegistry.getImplementedClasses()));
+    }
 
-    // sort
-    UnmanagedReportUtils.sort(select.orderBy(), importStructures);
-
-    long inlineCount = importStructures.size();
-
-    List<? extends Map<String, ?>> resultsPaging = UnmanagedReportUtils.getTopSkip(select.top(),
-        select.skip(), importStructures);
-    // set result by ResultBuilder
-    Result result = ResultBuilder.selectedRows(resultsPaging).inlineCount(inlineCount).result();
-    context.setResult(result);
-  }
-
-  @On(event = CqnService.EVENT_READ, entity = ImplementedByClass_.CDS_NAME)
-  public void getAllImplementedByClass(CdsReadEventContext context) throws IOException {
-    List<Map<String, Object>> implementedByClasses = new ArrayList<>();
-    List<Map<String, ? extends Object>> implementedByClasseResult = new ArrayList<>();
-
-    // Get CqnSelect
-    CqnSelect select = context.getCqn();
-    // ReflectionUtils.
-    implementedByClasses = ClassReflection.getClassbyInterface(ItemWriter.class);
-
-    implementedByClasses.forEach((clazz) -> {
-      CheckDataVisitor checkDataVisitor = new CheckDataVisitor(clazz);
-      try {
-        CqnPredicate cqnPredicate = select.where().get();
-        cqnPredicate.accept(checkDataVisitor);
-        if (checkDataVisitor.matches()) {
-          implementedByClasseResult.add(clazz); 
+    private void updateFileExecutionInfo(String fileUUID, String jobName, String status, String statusText,
+            int criticality) {
+        Map<String, Object> data = new HashMap<>();
+        if (jobName != null) {
+            data.put("JobName", jobName);
         }
-      } catch (Exception e) {
-        // No where conditions
-        implementedByClasseResult.add(clazz);
-      }
-    });
+        data.put("Status", status);
+        data.put("StatusText", statusText);
+        data.put("StatusCriticality", criticality);
 
-    // sort
-    UnmanagedReportUtils.sort(select.orderBy(), implementedByClasseResult);
+        CqnUpdate update = Update.entity(BatchImportFile_.class)
+                .data(data)
+                .where(file -> file.ID().eq(fileUUID));
+        dataImportService.run(update);
+    }
 
-    long inlineCount = implementedByClasseResult.size();
-
-    List<? extends Map<String, ?>> resultsPaging = UnmanagedReportUtils.getTopSkip(select.top(),
-        select.skip(), implementedByClasseResult);
-    // set result by ResultBuilder
-    Result result = ResultBuilder.selectedRows(resultsPaging).inlineCount(inlineCount).result();
-    context.setResult(result);
-
-  }
-
+    private Result buildResult(CqnSelect select, List<? extends Map<String, ?>> rows) {
+        List<? extends Map<String, ?>> filteredRows = new ArrayList<>(rows);
+        UnmanagedReportUtils.sort(select.orderBy(), filteredRows);
+        long inlineCount = filteredRows.size();
+        List<? extends Map<String, ?>> pagedRows = UnmanagedReportUtils.getTopSkip(select.top(), select.skip(),
+                filteredRows);
+        return ResultBuilder.selectedRows(pagedRows).inlineCount(inlineCount).result();
+    }
 }

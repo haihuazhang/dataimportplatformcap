@@ -4,7 +4,11 @@ using {batch} from '../db/model-springbatch';
 /** Services */
 service DataImportService {
     entity BatchImportConfig    as projection on zzdt.BatchImportConfig;
+    entity BatchImportStructure as projection on zzdt.BatchImportStructure;
+    entity BatchImportField     as projection on zzdt.BatchImportField;
     entity BatchImportFile      as projection on zzdt.BatchImportFile;
+    entity BatchImportData      as projection on zzdt.BatchImportData;
+    entity BatchImportMessage   as projection on zzdt.BatchImportMessage;
     entity JobInstance          as projection on batch.job_instance;
     entity JobExecution         as projection on batch.job_execution;
     entity JobExecutionContext  as projection on batch.job_execution_context;
@@ -13,6 +17,8 @@ service DataImportService {
     entity StepExecutionContext as projection on batch.step_execution_context;
     entity ImportStructure      as projection on zzdt.ImportStructure;
     entity ImplementedByClass   as projection on zzdt.ImplementedByClass;
+    entity ProcessKeyValueHelp  as projection on zzdt.ProcessKeyValueHelp;
+    entity ImportFieldType      as projection on zzdt.ImportFieldType;
 }
 
 
@@ -73,8 +79,9 @@ annotate DataImportService.BatchImportFile with {
         },
         Text     : to_Config.ObjectName
     };
-    ID         @UI.Hidden;
-    FileName   @UI.Hidden;
+    ID                   @UI.Hidden;
+    FileName             @UI.Hidden;
+    StatusCriticality    @UI.Hidden;
 }
 
 annotate DataImportService.BatchImportFile with @(UI: {
@@ -89,7 +96,19 @@ annotate DataImportService.BatchImportFile with @(UI: {
             {
                 Value: Attachment,
                 Label: 'Import File here'
+            },
+            {
+                Value: FileName,
+                ![@UI.Hidden]: true
             }
+        ]
+    },
+    FieldGroup #Status_FG : {
+        $Type: 'UI.FieldGroupType',
+        Label: 'Status',
+        Data : [
+            {Value: StatusText},
+            {Value: JobName},
         ]
     },
     FieldGroup #Job_FG    : {
@@ -117,10 +136,30 @@ annotate DataImportService.BatchImportFile with @(UI: {
             $Type : 'UI.ReferenceFacet',
             Target: '@UI.FieldGroup#Job_FG'
         },
+        {
+            ID    : 'Status',
+            $Type : 'UI.ReferenceFacet',
+            Target: '@UI.FieldGroup#Status_FG'
+        },
+        {
+            ID    : 'Data',
+            $Type : 'UI.ReferenceFacet',
+            Target: 'to_Data/@UI.LineItem'
+        },
+        {
+            ID    : 'Messages',
+            $Type : 'UI.ReferenceFacet',
+            Target: 'to_Messages/@UI.LineItem'
+        },
     ],
     LineItem              : [
         {Value: to_Config.ObjectName},
-        {Value: Attachment},
+        {Value: FileName},
+        {
+            Value       : StatusText,
+            Criticality : StatusCriticality,
+            $Type       : 'UI.DataField'
+        },
         {
             Value         : JobName,
             $Type         : 'UI.DataFieldWithIntentBasedNavigation',
@@ -155,14 +194,14 @@ annotate DataImportService.BatchImportConfig with {
 
         ]
     }};
-    ImplementedByClass @Common: {ValueList: {
+    ProcessKey         @Common: {ValueList: {
         $Type         : 'Common.ValueListType',
-        CollectionPath: 'ImplementedByClass',
+        CollectionPath: 'ProcessKeyValueHelp',
         Parameters    : [
             {
                 $Type            : 'Common.ValueListParameterInOut',
-                LocalDataProperty: 'ImplementedByClass',
-                ValueListProperty: 'Name'
+                LocalDataProperty: 'ProcessKey',
+                ValueListProperty: 'ProcessKey'
             },
             {
                 $Type            : 'Common.ValueListParameterDisplayOnly',
@@ -185,45 +224,44 @@ annotate DataImportService.BatchImportConfig with @UI: {
         },
 
         {
-            ID    : 'Function',
-            Target: '@UI.FieldGroup#Function_FG',
+            ID    : 'Runtime',
+            Target: '@UI.FieldGroup#Runtime_FG',
             $Type : 'UI.ReferenceFacet',
-            Label : 'Java Functions'
-        // position       : 20
+            Label : 'Runtime'
         },
         {
-            ID    : 'File',
-            Target: '@UI.FieldGroup#File_FG',
+            ID    : 'Legacy',
+            Target: '@UI.FieldGroup#Legacy_FG',
             $Type : 'UI.ReferenceFacet',
-            Label : 'File Processing'
-        // position       : 20
+            Label : 'Legacy Bootstrap'
         },
         {
             ID    : 'Template',
             Target: '@UI.FieldGroup#Template_FG',
             $Type : 'UI.ReferenceFacet',
             Label : 'Template Area'
-        // position       : 20
+        },
+        {
+            ID    : 'Structures',
+            Target: 'to_Structures/@UI.LineItem',
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Structures'
         }
     ],
     Identification         : [
         {Value: Object},
         {Value: ObjectName}
     ],
-    FieldGroup #Function_FG: {
+    FieldGroup #Runtime_FG : {
         $Type: 'UI.FieldGroupType',
         Data : [
-            {Value: ImplementedByClass},
-            {Value: StructName}
+            {Value: ProcessKey}
         ]
     },
-    FieldGroup #File_FG    : {
+    FieldGroup #Legacy_FG  : {
         $Type: 'UI.FieldGroupType',
         Data : [
-            {
-                Value        : MimeType,
-                ![@UI.Hidden]: true
-            },
+            {Value: StructName},
             {Value: SheetName},
             {Value: StartLine},
             {Value: StartColumn}
@@ -242,24 +280,151 @@ annotate DataImportService.BatchImportConfig with @UI: {
     LineItem               : [
         {Value: Object},
         {Value: ObjectName},
-        {Value: ImplementedByClass},
-        {
-            Value        : MimeType,
-            ![@UI.Hidden]: true
-        },
-        {Value: SheetName},
-        {Value: StructName},
+        {Value: ProcessKey},
         {Value: Template},
-        {
-            Value        : FileName,
-            ![@UI.Hidden]: true
-        },
-        {Value: Object},
-        {Value: Object},
+        {Value: SheetName},
+        {Value: StructName}
     ]
 };
 
 annotate DataImportService.BatchImportConfig with @odata.draft.enabled;
+
+annotate DataImportService.BatchImportStructure with {
+    ConfigUUID @Common: {
+        ValueList: {
+            $Type         : 'Common.ValueListType',
+            CollectionPath: 'BatchImportConfig',
+            Parameters    : [
+                {
+                    $Type            : 'Common.ValueListParameterInOut',
+                    LocalDataProperty: 'ConfigUUID',
+                    ValueListProperty: 'ID'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'ObjectName'
+                }
+            ]
+        }
+    };
+    ID        @UI.Hidden;
+}
+
+annotate DataImportService.BatchImportStructure with @UI: {
+    Facets                   : [
+        {
+            ID    : 'General',
+            $Type : 'UI.ReferenceFacet',
+            Target: '@UI.Identification'
+        },
+        {
+            ID    : 'Parsing',
+            $Type : 'UI.ReferenceFacet',
+            Target: '@UI.FieldGroup#Parsing_FG'
+        },
+        {
+            ID    : 'Fields',
+            $Type : 'UI.ReferenceFacet',
+            Target: 'to_Fields/@UI.LineItem'
+        }
+    ],
+    Identification           : [
+        {Value: RootNode},
+        {Value: SheetName},
+        {Value: SheetNameUp}
+    ],
+    FieldGroup #Parsing_FG   : {
+        $Type: 'UI.FieldGroupType',
+        Data : [
+            {Value: StartLine},
+            {Value: StartColumn},
+            {Value: HasFieldnameLine},
+            {Value: HasDescLine}
+        ]
+    },
+    LineItem                 : [
+        {Value: RootNode},
+        {Value: SheetName},
+        {Value: SheetNameUp},
+        {Value: StartLine},
+        {Value: StartColumn},
+        {Value: HasFieldnameLine},
+        {Value: HasDescLine}
+    ]
+};
+
+annotate DataImportService.BatchImportField with {
+    FieldType @Common: {ValueList: {
+        $Type         : 'Common.ValueListType',
+        CollectionPath: 'ImportFieldType',
+        Parameters    : [
+            {
+                $Type            : 'Common.ValueListParameterInOut',
+                LocalDataProperty: 'FieldType',
+                ValueListProperty: 'Code'
+            },
+            {
+                $Type            : 'Common.ValueListParameterDisplayOnly',
+                ValueListProperty: 'Description'
+            }
+        ]
+    }};
+    ID        @UI.Hidden;
+}
+
+annotate DataImportService.BatchImportField with @UI: {
+    Identification: [
+        {Value: FieldName},
+        {Value: FieldDescription}
+    ],
+    LineItem      : [
+        {Value: Sequence},
+        {Value: FieldName},
+        {Value: FieldDescription},
+        {Value: FieldType},
+        {Value: FieldLength},
+        {Value: FieldDecimal},
+        {Value: IsKeyField},
+        {Value: IsForeignField},
+        {Value: ForeignField}
+    ]
+};
+
+annotate DataImportService.BatchImportData with @(
+    UI.CreateHidden : true,
+    UI.UpdateHidden : true,
+    UI.DeleteHidden : true,
+    UI.LineItem     : [
+        {Value: Line},
+        {Value: StructureName},
+        {Value: DataJson}
+    ],
+    UI.Identification: [
+        {Value: Line},
+        {Value: StructureName},
+        {Value: DataJson}
+    ]
+);
+
+annotate DataImportService.BatchImportMessage with @(
+    UI.CreateHidden : true,
+    UI.UpdateHidden : true,
+    UI.DeleteHidden : true,
+    UI.LineItem     : [
+        {Value: Line},
+        {Value: Type},
+        {Value: Code},
+        {Value: Message},
+        {Value: Details}
+    ],
+    UI.Identification: [
+        {Value: Line},
+        {Value: Type},
+        {Value: Code},
+        {Value: Message},
+        {Value: Details}
+    ]
+);
 
 
 annotate DataImportService.JobInstance with @UI: {

@@ -107,6 +107,16 @@
           "pattern": "BatchImportConfig({key}):?query:",
           "name": "BatchImportConfigObjectPage",
           "target": "BatchImportConfigObjectPage"
+        },
+        {
+          "pattern": "BatchImportConfig({key})/to_Structures({key2}):?query:",
+          "name": "BatchImportStructureObjectPage",
+          "target": "BatchImportStructureObjectPage"
+        },
+        {
+          "pattern": "BatchImportConfig({key})/to_Structures({key2})/to_Fields({key3}):?query:",
+          "name": "BatchImportFieldObjectPage",
+          "target": "BatchImportFieldObjectPage"
         }
       ],
       "targets": {
@@ -135,7 +145,43 @@
           "options": {
             "settings": {
               "editableHeaderContent": false,
-              "entitySet": "BatchImportConfig"
+              "entitySet": "BatchImportConfig",
+              "navigation": {
+                "to_Structures": {
+                  "detail": {
+                    "route": "BatchImportStructureObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "BatchImportStructureObjectPage": {
+          "type": "Component",
+          "id": "BatchImportStructureObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "entitySet": "BatchImportStructure",
+              "navigation": {
+                "to_Fields": {
+                  "detail": {
+                    "route": "BatchImportFieldObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "BatchImportFieldObjectPage": {
+          "type": "Component",
+          "id": "BatchImportFieldObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "entitySet": "BatchImportField"
             }
           }
         }
