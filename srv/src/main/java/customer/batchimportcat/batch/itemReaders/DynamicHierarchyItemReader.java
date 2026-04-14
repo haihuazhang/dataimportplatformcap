@@ -30,10 +30,10 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamReader;
 
-import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldType;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 
 public class DynamicHierarchyItemReader implements ItemStreamReader<DynamicNode> {

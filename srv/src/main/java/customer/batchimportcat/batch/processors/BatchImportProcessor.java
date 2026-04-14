@@ -1,6 +1,6 @@
 package customer.batchimportcat.batch.processors;
 
-import customer.batchimportcat.batch.dynamic.BatchImportProcessResult;
+import customer.batchimportcat.batch.dynamic.dto.BatchImportProcessResult;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessPayload;
 

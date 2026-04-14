@@ -13,7 +13,9 @@ import customer.batchimportcat.batch.dynamic.dto.DynamicTable;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessPayload;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicTableHandle;
 
 @Component
 public class DynamicDataFactory {

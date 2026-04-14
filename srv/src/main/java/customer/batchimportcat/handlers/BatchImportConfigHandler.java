@@ -25,7 +25,7 @@ import cds.gen.dataimportservice.BatchImportField_;
 import cds.gen.dataimportservice.BatchImportStructure_;
 import cds.gen.dataimportservice.DataImportService_;
 import customer.batchimportcat.batch.dynamic.DynamicConfigurationBuilder;
-import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.consts.Constant;
 import customer.batchimportcat.service.BatchImportTemplateService;
 

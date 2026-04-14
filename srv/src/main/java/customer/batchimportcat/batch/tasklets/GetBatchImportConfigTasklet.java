@@ -13,9 +13,9 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import customer.batchimportcat.batch.dynamic.DynamicConfigurationBuilder;
-import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.types.BatchImportConfigData;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 import customer.batchimportcat.batch.exceptions.BatchExceptionsUtil;
 import customer.batchimportcat.service.BatchImportPersistenceService;

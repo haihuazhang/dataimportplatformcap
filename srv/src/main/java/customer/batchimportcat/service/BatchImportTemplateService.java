@@ -9,8 +9,8 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 
 @Service

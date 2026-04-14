@@ -12,7 +12,7 @@ import com.sap.cds.services.cds.CqnService;
 import cds.gen.exampleservice.ExampleService_;
 import cds.gen.exampleservice.ZZTable01;
 import cds.gen.exampleservice.ZZTable01_;
-import customer.batchimportcat.batch.dynamic.BatchImportProcessResult;
+import customer.batchimportcat.batch.dynamic.dto.BatchImportProcessResult;
 import customer.batchimportcat.batch.dynamic.dto.DynamicRow;
 import customer.batchimportcat.batch.dynamic.dto.DynamicTable;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;

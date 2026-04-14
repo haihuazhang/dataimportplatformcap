@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
-import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
-import customer.batchimportcat.batch.dynamic.DynamicTableHandle;
 import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
 
 public record BatchImportProcessContext(

@@ -13,14 +13,15 @@ import org.springframework.batch.item.ItemWriter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import customer.batchimportcat.batch.dynamic.BatchImportProcessResult;
+
 import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
-import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
-import customer.batchimportcat.batch.dynamic.DynamicTableHandle;
+import customer.batchimportcat.batch.dynamic.dto.BatchImportProcessResult;
 import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessPayload;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
+import customer.batchimportcat.batch.dynamic.types.DynamicTableHandle;
 import customer.batchimportcat.batch.dynamic.types.BatchImportOriginalDataRecord;
 import customer.batchimportcat.batch.processors.BatchImportProcessor;
 import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;

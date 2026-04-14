@@ -24,6 +24,7 @@ import cds.gen.dataimportservice.BatchImportField;
 import cds.gen.dataimportservice.BatchImportStructure;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldType;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 import customer.batchimportcat.batch.exceptions.BatchExceptionsUtil;
 

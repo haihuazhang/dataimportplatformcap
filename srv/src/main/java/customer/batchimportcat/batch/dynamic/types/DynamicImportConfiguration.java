@@ -1,10 +1,8 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.dynamic.types;
 
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
-
-import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 
 public record DynamicImportConfiguration(
         String id,
