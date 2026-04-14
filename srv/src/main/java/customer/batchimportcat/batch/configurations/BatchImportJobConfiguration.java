@@ -15,10 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import com.sap.cds.services.cds.CqnService;
-
-import cds.gen.dataimportservice.DataImportService_;
 import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
 import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
 import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
@@ -28,6 +24,7 @@ import customer.batchimportcat.batch.launchers.AsyncTransactionalJobLauncher;
 import customer.batchimportcat.batch.listeners.BatchImportJobExecutionListener;
 import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;
 import customer.batchimportcat.batch.tasklets.GetBatchImportConfigTasklet;
+import customer.batchimportcat.service.BatchImportPersistenceService;
 
 @Configuration
 // @EnableBatchProcessing(dataSourceRef = "ds-db", transactionManagerRef = "tx-db")
@@ -73,9 +70,9 @@ public class BatchImportJobConfiguration {
             @Value("#{jobExecutionContext['dynamicConfig']}") DynamicImportConfiguration dynamicConfig,
             @Value("#{jobParameters['fileUUID']}") String fileUUID,
             BatchImportProcessorRegistry processorRegistry,
-            @Qualifier(DataImportService_.CDS_NAME) CqnService dataImportService,
+            BatchImportPersistenceService batchImportPersistenceService,
             DynamicDataFactory dynamicDataFactory) {
-        return new ProcessKeyDelegatingItemWriter(dynamicConfig, fileUUID, processorRegistry, dataImportService,
+        return new ProcessKeyDelegatingItemWriter(dynamicConfig, fileUUID, processorRegistry, batchImportPersistenceService,
                 dynamicDataFactory);
     }
 
