@@ -3,18 +3,14 @@ package customer.batchimportcat.batch.dynamic.dto;
 import java.util.LinkedHashMap;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class DynamicRow extends LinkedHashMap<String, Object> {
     private final String structureUUID;
     private final String structureName;
     private final int lineNumber;
-
-    public DynamicRow(String structureUUID, String structureName, int lineNumber) {
-        this.structureUUID = structureUUID;
-        this.structureName = structureName;
-        this.lineNumber = lineNumber;
-    }
 
     public DynamicTable getRequiredChildTable(String childStructureName) {
         Object childTable = get(childStructureName);

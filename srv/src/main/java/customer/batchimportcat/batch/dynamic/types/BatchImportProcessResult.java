@@ -1,10 +1,9 @@
-package customer.batchimportcat.batch.dynamic.dto;
+package customer.batchimportcat.batch.dynamic.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
 import lombok.Getter;
 
 public class BatchImportProcessResult implements Serializable {
