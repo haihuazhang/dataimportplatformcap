@@ -2,7 +2,7 @@ package customer.batchimportcat.batch.configurations;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+// import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -29,7 +29,7 @@ import customer.batchimportcat.batch.jobLaunchers.AsyncTransactionalJobLauncher;
 import customer.batchimportcat.batch.tasklets.GetBatchImportConfigTasklet;
 
 @Configuration
-@EnableBatchProcessing(dataSourceRef = "ds-db", transactionManagerRef = "tx-db")
+// @EnableBatchProcessing(dataSourceRef = "ds-db", transactionManagerRef = "tx-db")
 public class BatchImportJobConfiguration {
     @Bean
     public Job batchImportJob(JobRepository jobRepository,
@@ -42,7 +42,8 @@ public class BatchImportJobConfiguration {
     }
 
     @Bean
-    public Step getBatchImportConfigStep(JobRepository jobRepository, PlatformTransactionManager transactionManager,
+    public Step getBatchImportConfigStep(JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
             @Qualifier("getBatchImportConfigTasklet") Tasklet getBatchImportConfigTasklet) {
         return new StepBuilder("getBatchImportConfigStep", jobRepository)
                 .tasklet(getBatchImportConfigTasklet, transactionManager)
@@ -76,7 +77,8 @@ public class BatchImportJobConfiguration {
     }
 
     @Bean
-    public Step processingDynamicData(JobRepository jobRepository, PlatformTransactionManager transactionManager,
+    public Step processingDynamicData(JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
             DynamicHierarchyItemReader dynamicHierarchyItemReader,
             ProcessKeyDelegatingItemWriter processKeyDelegatingItemWriter) {
         return new StepBuilder("processingDynamicData", jobRepository)
