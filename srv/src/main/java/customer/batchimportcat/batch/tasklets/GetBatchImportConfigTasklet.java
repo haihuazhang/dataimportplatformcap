@@ -29,9 +29,9 @@ import cds.gen.dataimportservice.BatchImportFile_;
 import cds.gen.dataimportservice.BatchImportStructure_;
 import cds.gen.dataimportservice.DataImportService_;
 import customer.batchimportcat.batch.dynamic.DynamicConfigurationBuilder;
-import customer.batchimportcat.batch.dynamic.DynamicFieldDefinition;
 import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
-import customer.batchimportcat.batch.dynamic.DynamicStructureDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 import customer.batchimportcat.batch.exceptions.BatchExceptionsUtil;
 import customer.batchimportcat.batch.exceptions.BatchFileNotFound;
 
@@ -80,7 +80,7 @@ public class GetBatchImportConfigTasklet implements Tasklet {
                     Select.from(BatchImportField_.class)
                             .where(field -> field.ConfigUUID().eq(configUUID))));
 
-            DynamicImportConfiguration dynamicConfig = dynamicConfigurationBuilder.fromExecutionContext(configData,
+            DynamicImportConfiguration dynamicConfig = dynamicConfigurationBuilder.build(configData,
                     structureRows, fieldRows);
             validate(dynamicConfig);
 

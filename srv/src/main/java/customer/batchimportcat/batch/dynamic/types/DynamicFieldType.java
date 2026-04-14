@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.dynamic.types;
 
 import com.sap.cds.reflect.CdsBaseType;
 import com.sap.cds.reflect.CdsSimpleType;

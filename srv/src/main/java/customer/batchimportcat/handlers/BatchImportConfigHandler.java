@@ -24,15 +24,14 @@ import cds.gen.dataimportservice.BatchImportConfig_;
 import cds.gen.dataimportservice.BatchImportField_;
 import cds.gen.dataimportservice.BatchImportStructure_;
 import cds.gen.dataimportservice.DataImportService_;
-import customer.batchimportcat.batch.dynamic.BatchImportTemplateService;
 import customer.batchimportcat.batch.dynamic.DynamicConfigurationBuilder;
 import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
+import customer.batchimportcat.consts.Constant;
+import customer.batchimportcat.service.BatchImportTemplateService;
 
 @Component
 @ServiceName(DataImportService_.CDS_NAME)
 public class BatchImportConfigHandler implements EventHandler {
-    private static final String TEMPLATE_MIME_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
     private final PersistenceService db;
     private final DynamicConfigurationBuilder dynamicConfigurationBuilder;
     private final BatchImportTemplateService batchImportTemplateService;
@@ -55,7 +54,7 @@ public class BatchImportConfigHandler implements EventHandler {
             byte[] template = batchImportTemplateService.generateTemplate(dynamicConfig);
             Map<String, Object> data = new HashMap<>();
             data.put("Template", template);
-            data.put("MimeType", TEMPLATE_MIME_TYPE);
+            data.put("MimeType", Constant.TEMPLATE_MIME_TYPE);
             data.put("FileName", buildTemplateFileName(dynamicConfig));
 
             CqnUpdate update = Update.entity(BatchImportConfig_.class)
@@ -75,7 +74,7 @@ public class BatchImportConfigHandler implements EventHandler {
         List<Map<String, Serializable>> fieldRows = toSerializableRows(db.run(
                 Select.from(BatchImportField_.class)
                         .where(field -> field.ConfigUUID().eq(configUUID))));
-        return dynamicConfigurationBuilder.fromExecutionContext(toSerializableMap(configRow), structureRows, fieldRows);
+        return dynamicConfigurationBuilder.build(toSerializableMap(configRow), structureRows, fieldRows);
     }
 
     private String buildTemplateFileName(DynamicImportConfiguration configuration) {

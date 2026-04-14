@@ -7,6 +7,14 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
+import customer.batchimportcat.batch.dynamic.dto.DynamicRow;
+import customer.batchimportcat.batch.dynamic.dto.DynamicTable;
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessPayload;
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
+
 @Component
 public class DynamicDataFactory {
     public Map<String, DynamicTableHandle> createHandles(DynamicImportConfiguration configuration) {

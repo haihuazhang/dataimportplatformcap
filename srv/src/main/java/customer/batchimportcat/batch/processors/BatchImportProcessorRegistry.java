@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.processors;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,7 +27,7 @@ public class BatchImportProcessorRegistry {
         }
     }
 
-    public BatchImportProcessor getRequired(String processKey) {
+    public BatchImportProcessor get(String processKey) {
         BatchImportProcessor processor = processorsByKey.get(processKey);
         if (processor == null) {
             throw new BatchConfigNotFound("Process key is not maintained in config " + processKey);

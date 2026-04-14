@@ -1,8 +1,10 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.dynamic.types;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+
+import customer.batchimportcat.batch.dynamic.dto.DynamicTable;
 
 public record BatchImportProcessPayload(
         Map<String, DynamicTable> rootTablesByStructureUUID,

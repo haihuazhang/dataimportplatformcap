@@ -12,7 +12,7 @@ import org.springframework.classify.Classifier;
 import com.sap.cds.reflect.CdsModel;
 
 import customer.batchimportcat.batch.exceptions.BatchExceptionsUtil;
-import customer.batchimportcat.batch.itemWriters.SimpleItemWriter;
+import customer.batchimportcat.batch.itemwriters.SimpleItemWriter;
 
 public class CdsBatchImportClassifier<T> implements Classifier<T, ItemWriter<? super T>> {
 

@@ -2,12 +2,11 @@ package customer.batchimportcat.batch.processors;
 
 import org.springframework.stereotype.Component;
 
-import customer.batchimportcat.batch.dynamic.BatchImportProcessContext;
-import customer.batchimportcat.batch.dynamic.BatchImportProcessPayload;
 import customer.batchimportcat.batch.dynamic.BatchImportProcessResult;
-import customer.batchimportcat.batch.dynamic.BatchImportProcessor;
-import customer.batchimportcat.batch.dynamic.DynamicRow;
-import customer.batchimportcat.batch.dynamic.DynamicTable;
+import customer.batchimportcat.batch.dynamic.dto.DynamicRow;
+import customer.batchimportcat.batch.dynamic.dto.DynamicTable;
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessPayload;
 
 @Component
 public class ExampleHeaderItemScheduleBatchImportProcessor implements BatchImportProcessor {

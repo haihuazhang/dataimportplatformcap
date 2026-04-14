@@ -19,13 +19,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.sap.cds.services.cds.CqnService;
 
 import cds.gen.dataimportservice.DataImportService_;
-import customer.batchimportcat.batch.dynamic.BatchImportProcessorRegistry;
 import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
-import customer.batchimportcat.batch.dynamic.DynamicHierarchyItemReader;
 import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
-import customer.batchimportcat.batch.dynamic.DynamicNode;
-import customer.batchimportcat.batch.dynamic.ProcessKeyDelegatingItemWriter;
-import customer.batchimportcat.batch.jobLaunchers.AsyncTransactionalJobLauncher;
+import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
+import customer.batchimportcat.batch.itemreaders.DynamicHierarchyItemReader;
+import customer.batchimportcat.batch.itemwriters.ProcessKeyDelegatingItemWriter;
+import customer.batchimportcat.batch.launchers.AsyncTransactionalJobLauncher;
+import customer.batchimportcat.batch.listeners.BatchImportJobExecutionListener;
+import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;
 import customer.batchimportcat.batch.tasklets.GetBatchImportConfigTasklet;
 
 @Configuration
@@ -33,9 +34,11 @@ import customer.batchimportcat.batch.tasklets.GetBatchImportConfigTasklet;
 public class BatchImportJobConfiguration {
     @Bean
     public Job batchImportJob(JobRepository jobRepository,
+            BatchImportJobExecutionListener batchImportJobExecutionListener,
             @Qualifier("getBatchImportConfigStep") Step getBatchImportConfigStep,
             @Qualifier("processingDynamicData") Step processingDynamicData) {
         return new JobBuilder("dynamicBatchImportJob", jobRepository)
+                .listener(batchImportJobExecutionListener)
                 .start(getBatchImportConfigStep)
                 .next(processingDynamicData)
                 .build();

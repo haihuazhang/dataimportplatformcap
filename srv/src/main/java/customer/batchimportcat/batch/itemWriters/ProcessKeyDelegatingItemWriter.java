@@ -1,7 +1,6 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.itemwriters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,19 +13,25 @@ import org.springframework.batch.item.ItemWriter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sap.cds.Result;
 import com.sap.cds.ql.Insert;
-import com.sap.cds.ql.Update;
 import com.sap.cds.ql.cqn.CqnInsert;
-import com.sap.cds.ql.cqn.CqnUpdate;
 import com.sap.cds.services.cds.CqnService;
 
 import cds.gen.dataimportservice.BatchImportData;
 import cds.gen.dataimportservice.BatchImportData_;
-import cds.gen.dataimportservice.BatchImportFile_;
 import cds.gen.dataimportservice.BatchImportMessage;
 import cds.gen.dataimportservice.BatchImportMessage_;
-import customer.batchimportcat.batch.exceptions.BatchExceptionsUtil;
+import customer.batchimportcat.batch.dynamic.BatchImportProcessResult;
+import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
+import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
+import customer.batchimportcat.batch.dynamic.DynamicTableHandle;
+import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessPayload;
+import customer.batchimportcat.batch.processors.BatchImportProcessor;
+import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;
+import customer.batchimportcat.consts.Constant;
 
 public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode>, StepExecutionListener {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -39,6 +44,7 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode>, 
 
     private BatchImportProcessor processor;
     private BatchImportProcessContext processContext;
+    private StepExecution stepExecution;
     private boolean hasErrors;
 
     public ProcessKeyDelegatingItemWriter(DynamicImportConfiguration configuration, String fileUUID,
@@ -53,17 +59,17 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode>, 
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        processor = processorRegistry.getRequired(configuration.processKey());
+        this.stepExecution = stepExecution;
+        processor = processorRegistry.get(configuration.processKey());
         processContext = buildProcessContext();
-        updateStatus("R", "Running", 2);
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        if (stepExecution.getStatus().isUnsuccessful() || hasErrors) {
-            updateStatus("E", "Error", 1);
-        } else {
-            updateStatus("S", "Success", 3);
+        if (hasErrors && this.stepExecution != null) {
+            this.stepExecution.getJobExecution()
+                    .getExecutionContext()
+                    .put(Constant.HAS_PROCESSING_ERRORS, Boolean.TRUE);
         }
         return stepExecution.getExitStatus();
     }
@@ -132,19 +138,5 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode>, 
         }
         CqnInsert insert = Insert.into(BatchImportMessage_.class).entries(messageEntries);
         dataImportService.run(insert);
-    }
-
-    private void updateStatus(String status, String statusText, int criticality) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("Status", status);
-        data.put("StatusText", statusText);
-        data.put("StatusCriticality", criticality);
-        CqnUpdate update = Update.entity(BatchImportFile_.class)
-                .data(data)
-                .where(file -> file.ID().eq(fileUUID));
-        Result result = dataImportService.run(update);
-        if (result.rowCount() < 0) {
-            throw BatchExceptionsUtil.getBatchRecordNotSucess(BatchImportFile_.CDS_NAME, 0);
-        }
     }
 }

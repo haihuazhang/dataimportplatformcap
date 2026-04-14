@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.jobLaunchers;
+package customer.batchimportcat.batch.launchers;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;

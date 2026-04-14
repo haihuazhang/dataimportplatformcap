@@ -17,12 +17,9 @@ import org.springframework.stereotype.Component;
 
 import com.sap.cds.Result;
 import com.sap.cds.ResultBuilder;
-import com.sap.cds.ql.Update;
 import com.sap.cds.ql.cqn.CqnPredicate;
 import com.sap.cds.ql.cqn.CqnSelect;
-import com.sap.cds.ql.cqn.CqnUpdate;
 import com.sap.cds.reflect.CdsModel;
-import com.sap.cds.reflect.CdsStructuredType;
 import com.sap.cds.services.cds.CdsReadEventContext;
 import com.sap.cds.services.cds.CqnService;
 import com.sap.cds.services.handler.EventHandler;
@@ -40,8 +37,9 @@ import cds.gen.dataimportservice.ImportStructure_;
 import cds.gen.dataimportservice.ImplementedByClass_;
 import cds.gen.dataimportservice.ProcessKeyValueHelp;
 import cds.gen.dataimportservice.ProcessKeyValueHelp_;
-import customer.batchimportcat.batch.dynamic.BatchImportProcessorRegistry;
-import customer.batchimportcat.batch.dynamic.DynamicFieldType;
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldType;
+import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;
+import customer.batchimportcat.service.BatchImportFileStatusService;
 import customer.batchimportcat.utils.CheckDataVisitor;
 import customer.batchimportcat.utils.UnmanagedReportUtils;
 
@@ -56,18 +54,18 @@ public class DataImportServiceHandler implements EventHandler {
 
     private final CdsModel model;
     private final BatchImportProcessorRegistry processorRegistry;
-    private final CqnService dataImportService;
+    private final BatchImportFileStatusService batchImportFileStatusService;
 
     public DataImportServiceHandler(@Qualifier("asyncJobLauncher") JobLauncher jobLauncher,
             @Qualifier("batchImportJob") Job job,
             CdsModel model,
             BatchImportProcessorRegistry processorRegistry,
-            @Qualifier(DataImportService_.CDS_NAME) CqnService dataImportService) {
+            BatchImportFileStatusService batchImportFileStatusService) {
         this.jobLauncher = jobLauncher;
         this.job = job;
         this.model = model;
         this.processorRegistry = processorRegistry;
-        this.dataImportService = dataImportService;
+        this.batchImportFileStatusService = batchImportFileStatusService;
     }
 
     @After(event = CqnService.EVENT_CREATE, entity = BatchImportFile_.CDS_NAME)
@@ -82,9 +80,9 @@ public class DataImportServiceHandler implements EventHandler {
 
             try {
                 JobExecution jobExecution = jobLauncher.run(job, new JobParameters(parameters));
-                updateFileExecutionInfo(file.getId(), jobExecution.getJobId().toString(), "Q", "Queued", 2);
+                batchImportFileStatusService.markQueued(file.getId(), jobExecution.getJobId());
             } catch (Exception exception) {
-                updateFileExecutionInfo(file.getId(), null, "E", "Error", 1);
+                batchImportFileStatusService.markError(file.getId(), null);
             }
         });
     }
@@ -144,22 +142,6 @@ public class DataImportServiceHandler implements EventHandler {
     @On(event = CqnService.EVENT_READ, entity = ImplementedByClass_.CDS_NAME)
     public void getAllImplementedByClass(CdsReadEventContext context) throws IOException {
         context.setResult(buildResult(context.getCqn(), processorRegistry.getImplementedClasses()));
-    }
-
-    private void updateFileExecutionInfo(String fileUUID, String jobName, String status, String statusText,
-            int criticality) {
-        Map<String, Object> data = new HashMap<>();
-        if (jobName != null) {
-            data.put("JobName", jobName);
-        }
-        data.put("Status", status);
-        data.put("StatusText", statusText);
-        data.put("StatusCriticality", criticality);
-
-        CqnUpdate update = Update.entity(BatchImportFile_.class)
-                .data(data)
-                .where(file -> file.ID().eq(fileUUID));
-        dataImportService.run(update);
     }
 
     private Result buildResult(CqnSelect select, List<? extends Map<String, ?>> rows) {

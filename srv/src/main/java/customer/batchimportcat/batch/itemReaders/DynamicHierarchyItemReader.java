@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.itemreaders;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,8 +30,20 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamReader;
 
+import customer.batchimportcat.batch.dynamic.DynamicImportConfiguration;
+import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldType;
+import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
+
 public class DynamicHierarchyItemReader implements ItemStreamReader<DynamicNode> {
     private static final String INDEX_KEY = "dynamicHierarchyReader.index";
+    private static final List<DateTimeFormatter> DATE_FORMATTERS = List.of(
+            DateTimeFormatter.ISO_LOCAL_DATE,
+            DateTimeFormatter.BASIC_ISO_DATE,
+            DateTimeFormatter.ofPattern("yyyy-M-d"),
+            DateTimeFormatter.ofPattern("yyyy/M/d"),
+            DateTimeFormatter.ofPattern("yyyy.M.d"));
 
     private final byte[] fileContent;
     private final DynamicImportConfiguration configuration;
@@ -226,7 +240,7 @@ public class DynamicHierarchyItemReader implements ItemStreamReader<DynamicNode>
         if (DateUtil.isCellDateFormatted(cell)) {
             return cell.getLocalDateTimeCellValue().toLocalDate().toString();
         }
-        LocalDate parsedValue = LocalDate.parse(formattedValue.trim());
+        LocalDate parsedValue = parseLocalDate(formattedValue);
         return parsedValue.toString();
     }
 
@@ -243,5 +257,17 @@ public class DynamicHierarchyItemReader implements ItemStreamReader<DynamicNode>
             return localDateTime.toString();
         }
         return formattedValue.trim();
+    }
+
+    private LocalDate parseLocalDate(String formattedValue) {
+        String normalized = formattedValue.trim();
+        for (DateTimeFormatter formatter : DATE_FORMATTERS) {
+            try {
+                return LocalDate.parse(normalized, formatter);
+            } catch (DateTimeParseException exception) {
+                // Try the next accepted date format.
+            }
+        }
+        return LocalDate.parse(normalized);
     }
 }

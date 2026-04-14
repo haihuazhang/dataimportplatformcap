@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.dynamic.types;
 
 import java.io.Serializable;
 import java.util.Comparator;

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
+
 public class BatchImportProcessResult implements Serializable {
     private final List<BatchImportProcessMessage> messages = new ArrayList<>();
     private boolean hasErrors;

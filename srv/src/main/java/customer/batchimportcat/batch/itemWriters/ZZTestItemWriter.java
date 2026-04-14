@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.itemWriters;
+package customer.batchimportcat.batch.itemwriters;
 
 import java.util.Map;
 

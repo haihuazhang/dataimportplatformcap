@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.itemReaders.rowMappers;
+package customer.batchimportcat.batch.itemreaders.rowMappers;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
