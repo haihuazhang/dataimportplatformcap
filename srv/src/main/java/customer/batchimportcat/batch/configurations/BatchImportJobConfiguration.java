@@ -20,8 +20,10 @@ import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
 import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.batch.itemreaders.DynamicHierarchyItemReader;
 import customer.batchimportcat.batch.itemwriters.ProcessKeyDelegatingItemWriter;
+import customer.batchimportcat.batch.itemwriters.ProcessKeyDelegatingStepState;
 import customer.batchimportcat.batch.launchers.AsyncTransactionalJobLauncher;
 import customer.batchimportcat.batch.listeners.BatchImportJobExecutionListener;
+import customer.batchimportcat.batch.listeners.ProcessKeyDelegatingStepExecutionListener;
 import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;
 import customer.batchimportcat.batch.tasklets.GetBatchImportConfigTasklet;
 import customer.batchimportcat.service.BatchImportPersistenceService;
@@ -66,26 +68,41 @@ public class BatchImportJobConfiguration {
 
     @Bean
     @StepScope
-    public ProcessKeyDelegatingItemWriter processKeyDelegatingItemWriter(
+    public ProcessKeyDelegatingStepState processKeyDelegatingStepState(
             @Value("#{jobExecutionContext['dynamicConfig']}") DynamicImportConfiguration dynamicConfig,
             @Value("#{jobParameters['fileUUID']}") String fileUUID,
             BatchImportProcessorRegistry processorRegistry,
-            BatchImportPersistenceService batchImportPersistenceService,
             DynamicDataFactory dynamicDataFactory) {
-        return new ProcessKeyDelegatingItemWriter(dynamicConfig, fileUUID, processorRegistry, batchImportPersistenceService,
-                dynamicDataFactory);
+        return new ProcessKeyDelegatingStepState(dynamicConfig, fileUUID, processorRegistry, dynamicDataFactory);
+    }
+
+    @Bean
+    @StepScope
+    public ProcessKeyDelegatingItemWriter processKeyDelegatingItemWriter(
+            @Value("#{jobParameters['fileUUID']}") String fileUUID,
+            BatchImportPersistenceService batchImportPersistenceService,
+            ProcessKeyDelegatingStepState processKeyDelegatingStepState) {
+        return new ProcessKeyDelegatingItemWriter(fileUUID, batchImportPersistenceService, processKeyDelegatingStepState);
+    }
+
+    @Bean
+    @StepScope
+    public ProcessKeyDelegatingStepExecutionListener processKeyDelegatingStepExecutionListener(
+            ProcessKeyDelegatingStepState processKeyDelegatingStepState) {
+        return new ProcessKeyDelegatingStepExecutionListener(processKeyDelegatingStepState);
     }
 
     @Bean
     public Step processingDynamicData(JobRepository jobRepository,
             PlatformTransactionManager transactionManager,
             DynamicHierarchyItemReader dynamicHierarchyItemReader,
-            ProcessKeyDelegatingItemWriter processKeyDelegatingItemWriter) {
+            ProcessKeyDelegatingItemWriter processKeyDelegatingItemWriter,
+            ProcessKeyDelegatingStepExecutionListener processKeyDelegatingStepExecutionListener) {
         return new StepBuilder("processingDynamicData", jobRepository)
                 .<DynamicNode, DynamicNode>chunk(50, transactionManager)
                 .reader(dynamicHierarchyItemReader)
                 .writer(processKeyDelegatingItemWriter)
-                .listener(processKeyDelegatingItemWriter)
+                .listener(processKeyDelegatingStepExecutionListener)
                 .build();
     }
 

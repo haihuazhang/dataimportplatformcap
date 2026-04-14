@@ -240,7 +240,8 @@ public class DynamicHierarchyItemReader implements ItemStreamReader<DynamicNode>
         if (DateUtil.isCellDateFormatted(cell)) {
             return cell.getLocalDateTimeCellValue().toLocalDate().toString();
         }
-        LocalDate parsedValue = parseLocalDate(formattedValue);
+        // LocalDate parsedValue = parseLocalDate(formattedValue);
+        LocalDate parsedValue = LocalDate.parse(formattedValue);
         return parsedValue.toString();
     }
 
