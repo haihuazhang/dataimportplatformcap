@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
+import lombok.Getter;
 
 public class BatchImportProcessResult implements Serializable {
+    @Getter
     private final List<BatchImportProcessMessage> messages = new ArrayList<>();
     private boolean hasErrors;
-
-    public List<BatchImportProcessMessage> getMessages() {
-        return messages;
-    }
 
     public boolean hasErrors() {
         return hasErrors;

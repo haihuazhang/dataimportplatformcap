@@ -2,7 +2,7 @@ package customer.batchimportcat.service;
 
 import java.util.List;
 
-import customer.batchimportcat.batch.dynamic.types.BatchImportConfigData;
+import customer.batchimportcat.batch.dynamic.dto.BatchImportConfigData;
 import customer.batchimportcat.batch.dynamic.types.BatchImportOriginalDataRecord;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
 

@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+
+@Getter
 public class DynamicNode implements Serializable {
     private final String structureUUID;
     private final String structureName;
@@ -24,26 +27,6 @@ public class DynamicNode implements Serializable {
         this.lineNumber = lineNumber;
         this.fields = fields;
         this.children = children;
-    }
-
-    public String getStructureUUID() {
-        return structureUUID;
-    }
-
-    public String getStructureName() {
-        return structureName;
-    }
-
-    public int getLineNumber() {
-        return lineNumber;
-    }
-
-    public LinkedHashMap<String, Object> getFields() {
-        return fields;
-    }
-
-    public LinkedHashMap<String, List<DynamicNode>> getChildren() {
-        return children;
     }
 
     public void putField(String fieldName, Object value) {

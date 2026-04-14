@@ -4,17 +4,28 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 
-public record DynamicStructureDefinition(
-        String id,
-        String configUUID,
-        boolean rootNode,
-        String sheetName,
-        String sheetNameUp,
-        int startLine,
-        String startColumn,
-        boolean hasFieldnameLine,
-        boolean hasDescLine,
-        List<DynamicFieldDefinition> fields) implements Serializable {
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
+@Getter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Accessors(fluent = true)
+public class DynamicStructureDefinition implements Serializable {
+        private final String id;
+        private final String configUUID;
+        private final boolean rootNode;
+        private final String sheetName;
+        private final String sheetNameUp;
+        private final int startLine;
+        private final String startColumn;
+        private final boolean hasFieldnameLine;
+        private final boolean hasDescLine;
+        private final List<DynamicFieldDefinition> fields;
 
     public List<DynamicFieldDefinition> sortedFields() {
         return fields.stream()

@@ -5,13 +5,24 @@ import java.util.Map;
 
 import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
 import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
-public record BatchImportProcessContext(
-        String fileUUID,
-        DynamicImportConfiguration configuration,
-        Map<String, DynamicTableHandle> handlesByStructureUUID,
-        Map<String, DynamicTableHandle> handlesByStructureName,
-        DynamicDataFactory dataFactory) {
+@Getter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Accessors(fluent = true)
+public class BatchImportProcessContext {
+    private final String fileUUID;
+    private final DynamicImportConfiguration configuration;
+    private final Map<String, DynamicTableHandle> handlesByStructureUUID;
+    private final Map<String, DynamicTableHandle> handlesByStructureName;
+    private final DynamicDataFactory dataFactory;
+
     public DynamicTableHandle getRequiredHandle(String structureUUID) {
         DynamicTableHandle handle = handlesByStructureUUID.get(structureUUID);
         if (handle == null) {

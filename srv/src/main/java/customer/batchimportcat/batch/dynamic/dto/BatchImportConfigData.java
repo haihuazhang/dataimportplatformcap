@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.dynamic.types;
+package customer.batchimportcat.batch.dynamic.dto;
 
 import java.io.Serializable;
 import java.util.List;

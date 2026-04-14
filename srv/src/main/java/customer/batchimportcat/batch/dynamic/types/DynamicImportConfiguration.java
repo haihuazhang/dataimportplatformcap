@@ -4,17 +4,28 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 
-public record DynamicImportConfiguration(
-        String id,
-        String object,
-        String objectName,
-        String processKey,
-        String implementedByClass,
-        String legacyStructName,
-        String legacySheetName,
-        int legacyStartLine,
-        String legacyStartColumn,
-        List<DynamicStructureDefinition> structures) implements Serializable {
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
+@Getter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Accessors(fluent = true)
+public class DynamicImportConfiguration implements Serializable {
+    private final String id;
+    private final String object;
+    private final String objectName;
+    private final String processKey;
+    private final String implementedByClass;
+    private final String legacyStructName;
+    private final String legacySheetName;
+    private final int legacyStartLine;
+    private final String legacyStartColumn;
+    private final List<DynamicStructureDefinition> structures;
 
     public List<DynamicStructureDefinition> sortedStructures() {
         return structures.stream()

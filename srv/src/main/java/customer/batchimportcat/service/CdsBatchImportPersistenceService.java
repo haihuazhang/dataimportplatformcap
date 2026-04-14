@@ -28,7 +28,7 @@ import cds.gen.dataimportservice.BatchImportMessage;
 import cds.gen.dataimportservice.BatchImportMessage_;
 import cds.gen.dataimportservice.BatchImportStructure_;
 import cds.gen.dataimportservice.DataImportService_;
-import customer.batchimportcat.batch.dynamic.types.BatchImportConfigData;
+import customer.batchimportcat.batch.dynamic.dto.BatchImportConfigData;
 import customer.batchimportcat.batch.dynamic.types.BatchImportOriginalDataRecord;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
 import customer.batchimportcat.batch.exceptions.BatchExceptionsUtil;

@@ -1,9 +1,11 @@
 package customer.batchimportcat.batch.dynamic.dto;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DynamicTable extends ArrayList<DynamicRow> implements Serializable {
+import lombok.Getter;
+
+@Getter
+public class DynamicTable extends ArrayList<DynamicRow> {
     private final String structureUUID;
     private final String structureName;
 
@@ -12,11 +14,4 @@ public class DynamicTable extends ArrayList<DynamicRow> implements Serializable 
         this.structureName = structureName;
     }
 
-    public String getStructureUUID() {
-        return structureUUID;
-    }
-
-    public String getStructureName() {
-        return structureName;
-    }
 }

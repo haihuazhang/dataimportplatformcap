@@ -5,10 +5,21 @@ import java.util.Collection;
 import java.util.Map;
 
 import customer.batchimportcat.batch.dynamic.dto.DynamicTable;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
-public record BatchImportProcessPayload(
-        Map<String, DynamicTable> rootTablesByStructureUUID,
-        Map<String, DynamicTable> rootTablesByStructureName) implements Serializable {
+@Getter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Accessors(fluent = true)
+public class BatchImportProcessPayload implements Serializable {
+    private final Map<String, DynamicTable> rootTablesByStructureUUID;
+    private final Map<String, DynamicTable> rootTablesByStructureName;
+
     public DynamicTable getRequiredRootTable(String structureUUID) {
         DynamicTable table = rootTablesByStructureUUID.get(structureUUID);
         if (table == null) {
