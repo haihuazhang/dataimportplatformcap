@@ -108,7 +108,6 @@ annotate DataImportService.BatchImportFile with @(UI: {
         Label: 'Status',
         Data : [
             {Value: StatusText},
-            {Value: JobName},
         ]
     },
     FieldGroup #Job_FG    : {
