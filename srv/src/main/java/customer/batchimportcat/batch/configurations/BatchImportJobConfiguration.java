@@ -6,6 +6,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.TaskExecutorJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
 import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
@@ -21,7 +23,6 @@ import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
 import customer.batchimportcat.batch.itemreaders.DynamicHierarchyItemReader;
 import customer.batchimportcat.batch.itemwriters.ProcessKeyDelegatingItemWriter;
 import customer.batchimportcat.batch.itemwriters.ProcessKeyDelegatingStepState;
-import customer.batchimportcat.batch.launchers.AsyncTransactionalJobLauncher;
 import customer.batchimportcat.batch.listeners.BatchImportJobExecutionListener;
 import customer.batchimportcat.batch.listeners.ProcessKeyDelegatingStepExecutionListener;
 import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;
@@ -106,11 +107,17 @@ public class BatchImportJobConfiguration {
                 .build();
     }
 
+    @Bean("batchTriggerExecutor")
+    public TaskExecutor batchTriggerExecutor() {
+        return new SimpleAsyncTaskExecutor();
+    }
+
     @Bean
-    public JobLauncher asyncJobLauncher(JobRepository jobRepository) {
-        AsyncTransactionalJobLauncher jobLauncher = new AsyncTransactionalJobLauncher();
+    public JobLauncher asyncJobLauncher(JobRepository jobRepository,
+            @Qualifier("batchTriggerExecutor") TaskExecutor batchTriggerExecutor) {
+        TaskExecutorJobLauncher jobLauncher = new TaskExecutorJobLauncher();
         jobLauncher.setJobRepository(jobRepository);
-        jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        jobLauncher.setTaskExecutor(batchTriggerExecutor);
         try {
             jobLauncher.afterPropertiesSet();
         } catch (Exception exception) {

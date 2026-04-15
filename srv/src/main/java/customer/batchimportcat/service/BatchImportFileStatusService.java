@@ -1,8 +1,11 @@
 package customer.batchimportcat.service;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+// @Transactional(propagation = Propagation.REQUIRES_NEW)
 public class BatchImportFileStatusService {
     private final BatchImportPersistenceService batchImportPersistenceService;
 

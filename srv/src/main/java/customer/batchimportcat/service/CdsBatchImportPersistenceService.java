@@ -135,7 +135,7 @@ public class CdsBatchImportPersistenceService implements BatchImportPersistenceS
         CqnUpdate update = Update.entity(BatchImportFile_.class)
                 .data(data)
                 .where(file -> file.ID().eq(fileUUID));
-        Result result = dataImportService.run(update);
+        dataImportService.run(update);
     }
 
     private byte[] readFileContent(Row fileRow) {

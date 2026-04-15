@@ -59,10 +59,10 @@ entity BatchImportFile : cuid, managed {
     MimeType           : String       @Core.IsMediaType;
     FileName           : String(255)  @Common.Label:'{i18n>zzdt_FileName}';
     Attachment         : LargeBinary  @Core.MediaType: MimeType  @Core.ContentDisposition.Filename: FileName;
-    JobName            : String(150)  @Common.Label:'{i18n>zzdt_JobName}' @readonly;
-    Status             : String(1)    @Common.Label:'{i18n>zzdt_Status}' @readonly;
-    StatusText         : String(40)   @Common.Label:'{i18n>zzdt_StatusText}' @readonly;
-    StatusCriticality  : Int32        @Common.Label:'{i18n>zzdt_StatusCriticality}' @readonly;
+    JobName            : String(150)  @Common.Label:'{i18n>zzdt_JobName}';
+    Status             : String(1)    @Common.Label:'{i18n>zzdt_Status}';
+    StatusText         : String(40)   @Common.Label:'{i18n>zzdt_StatusText}';
+    StatusCriticality  : Int32        @Common.Label:'{i18n>zzdt_StatusCriticality}';
     to_Config          : Association to one BatchImportConfig
                              on ConfigUUID = to_Config.ID;
     to_Data            : Composition of many BatchImportData
