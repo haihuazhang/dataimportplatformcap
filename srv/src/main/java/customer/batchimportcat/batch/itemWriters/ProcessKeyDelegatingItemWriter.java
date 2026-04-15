@@ -1,6 +1,7 @@
 package customer.batchimportcat.batch.itemwriters;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.batch.item.Chunk;
@@ -10,6 +11,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
+import customer.batchimportcat.batch.dynamic.dto.DynamicRow;
+import customer.batchimportcat.batch.dynamic.dto.DynamicTable;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
+import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessContext;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessPayload;
@@ -42,8 +47,9 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode> {
             return;
         }
 
-        saveOriginalData(items);
         BatchImportProcessPayload payload = processContext.createPayload(items);
+        saveOriginalData(payload, processContext);
+
         BatchImportProcessResult result = processor.process(processContext, payload);
         if (result != null) {
             saveMessages(result.getMessages());
@@ -51,13 +57,23 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode> {
         }
     }
 
-    private void saveOriginalData(List<DynamicNode> items) {
-        List<BatchImportOriginalDataRecord> dataEntries = new ArrayList<>(items.size());
-        for (DynamicNode item : items) {
+    private void saveOriginalData(BatchImportProcessPayload payload, BatchImportProcessContext processContext) {
+        String primaryRootStructureUUID = resolvePrimaryRootStructureUUID(processContext.configuration());
+        if (primaryRootStructureUUID == null) {
+            return;
+        }
+
+        DynamicTable rootTable = payload.rootTablesByStructureUUID().get(primaryRootStructureUUID);
+        if (rootTable == null || rootTable.isEmpty()) {
+            return;
+        }
+
+        List<BatchImportOriginalDataRecord> dataEntries = new ArrayList<>(rootTable.size());
+        for (DynamicRow rootRow : rootTable) {
             dataEntries.add(new BatchImportOriginalDataRecord(
-                    Long.valueOf(item.getLineNumber()),
-                    item.getStructureName(),
-                    toJson(item)));
+                    Long.valueOf(rootRow.getLineNumber()),
+                    rootTable.getStructureName(),
+                    toJson(rootTable.getStructureName(), rootRow)));
         }
         batchImportPersistenceService.saveOriginalData(fileUUID, dataEntries);
     }
@@ -69,12 +85,21 @@ public class ProcessKeyDelegatingItemWriter implements ItemWriter<DynamicNode> {
         batchImportPersistenceService.saveMessages(fileUUID, messages);
     }
 
-    private String toJson(DynamicNode node) {
+    private String toJson(String rootStructureName, DynamicRow rootRow) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(node.asSerializableMap());
+            LinkedHashMap<String, Object> root = new LinkedHashMap<>();
+            root.put(rootStructureName, rootRow);
+            return OBJECT_MAPPER.writeValueAsString(root);
         } catch (JsonProcessingException exception) {
-            throw new IllegalStateException("Failed to serialize dynamic node.", exception);
+            throw new IllegalStateException("Failed to serialize dynamic row.", exception);
         }
+    }
+
+    private String resolvePrimaryRootStructureUUID(DynamicImportConfiguration configuration) {
+        for (DynamicStructureDefinition rootStructure : configuration.rootStructures()) {
+            return rootStructure.id();
+        }
+        return null;
     }
 
 }

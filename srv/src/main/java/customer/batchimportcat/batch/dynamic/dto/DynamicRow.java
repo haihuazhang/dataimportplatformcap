@@ -7,9 +7,14 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
+// Safety option (keep disabled for now):
+// @JsonIgnoreProperties({ "structureUUID", "structureName", "lineNumber" })
 public class DynamicRow extends LinkedHashMap<String, Object> {
+    // @JsonIgnore
     private final String structureUUID;
+    // @JsonIgnore
     private final String structureName;
+    // @JsonIgnore
     private final int lineNumber;
 
     public DynamicTable getRequiredChildTable(String childStructureName) {
