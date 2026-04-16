@@ -1,13 +1,14 @@
 {
   "name": "deploy",
   "dependencies": {
-    "@sap/hdi-deploy": "^4"
+    "@cap-js/postgres": "^2",
+    "@sap/cds": "^9"
   },
   "engines": {
     "node": "^16 || ^18"
   },
   "scripts": {
-    "start": "node node_modules/@sap/hdi-deploy/deploy.js",
-    "build": "npm i && npx cds build .. --for hana --production"
+    "start": "cds-deploy",
+    "build": "npm i && npx cds build .. --production"
   }
 }

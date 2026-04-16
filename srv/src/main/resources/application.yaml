@@ -1,7 +1,16 @@
 # ---
 spring:
   profiles:
-    active: hybrid
+    active: pg
+  batch:
+    job:
+      enabled: false
+  quartz:
+    properties:
+      org:
+        quartz:
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 # ---
 # spring:
 # #   config.activate.on-profile: default
@@ -20,21 +29,47 @@ spring:
   web.resources.static-locations: "file:./app"
   config:
     activate:
-      on-profile: hybrid    
+      on-profile: pg
+  datasource:
+    url: jdbc:postgresql://localhost:5432/batchimportcat
+    username: haihuazhang
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        # - classpath:schema-pg-reset.sql
+        # - classpath:org/springframework/batch/core/schema-drop-postgresql.sql
+        # - classpath:org/springframework/batch/core/schema-postgresql.sql
+        # - classpath:org/quartz/impl/jdbcjobstore/tables_postgres.sql
+        # - classpath:schema-pg-compat.sql
+        - classpath:schema.sql
+  batch:
+    jdbc:
+      initialize-schema: NEVER
   quartz:
     job-store-type: jdbc
     jdbc:
-      platform: sapdb
       initialize-schema: NEVER
-
-    
-  # profiles:
-  #   active: cloud 
 cds:
   dataSource:
     auto-config.enabled: true
-#     xxx-db:
-#       maximum-pool-size: 100
+
+---
+spring:
+  web.resources.static-locations: "file:./app/,file:../app/,file:./dataimportplatformcap/app/"
+  config:
+    activate:
+      on-profile: hybrid
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: NEVER
+cds:
+  dataSource:
+    auto-config.enabled: true
 
 
 # ---
@@ -48,5 +83,3 @@ cds:
 #     auto-config.enabled: true
 #     xxx-db:
 #       maximum-pool-size: 100
-
-

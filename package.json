@@ -10,6 +10,9 @@
     "app/zzdtimpfile",
     "app/zzdtimplog"
   ],
+  "dependencies": {
+    "@cap-js/postgres": "^2"
+  },
   "devDependencies": {
     "@sap/cds-dk": "9.8.3",
     "@sap/ux-specification": "^1.120.5"

@@ -1,0 +1,238 @@
+@host = http://localhost:8080
+@service = {{host}}/odata/v4/DataImportService
+@basic_auth = Basic c3lzdGVtOg==
+
+@config_id = 3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001
+
+@header_structure_id = 3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2001
+@item_structure_id = 3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2002
+@schedule_structure_id = 3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2003
+
+# Expected workbook layout after template generation:
+# Sheet Header   : HeaderId | DocumentNo | HeaderName
+# Sheet Item     : HeaderId | ItemNo | MaterialCode | Quantity
+# Sheet Schedule : HeaderId | ItemNo | ScheduleLine | DeliveryDate | Quantity
+#
+# Notes:
+# 1. SheetName must stay Header / Item / Schedule, because the processor reads child tables by these names.
+# 2. Item rows link to Header by Item.HeaderId -> Header.HeaderId.
+# 3. Schedule rows link to Item by Schedule.HeaderId -> Item.HeaderId and Schedule.ItemNo -> Item.ItemNo.
+# 4. This request bypasses draft flow intentionally by sending IsActiveEntity=true, which CAP supports for draft-enabled entities.
+# 5. If your local service is exposed on another port, change @host only.
+# 6. Basic auth header below is for user `system` with empty password, that is `system:`.
+
+###
+# Create one active configuration with nested structures and fields
+POST {{service}}/BatchImportConfig
+Authorization: {{basic_auth}}
+Content-Type: application/json
+Accept: application/json
+Prefer: return=representation
+
+{
+  "ID": "{{config_id}}",
+  "IsActiveEntity": true,
+  "Object": "EX_HIS_TEST",
+  "ObjectName": "Example Header Item Schedule Test Config",
+  "ProcessKey": "EXAMPLE_HEADER_ITEM_SCHEDULE",
+  "ImplementedByClass": "customer.batchimportcat.batch.processors.ExampleHeaderItemScheduleBatchImportProcessor",
+  "StructName": "Header",
+  "SheetName": "Header",
+  "StartLine": 1,
+  "StartColumn": "A",
+  "to_Structures": [
+    {
+      "ID": "{{header_structure_id}}",
+      "ConfigUUID": "{{config_id}}",
+      "RootNode": true,
+      "SheetName": "Header",
+      "StartLine": 1,
+      "StartColumn": "A",
+      "HasFieldnameLine": true,
+      "HasDescLine": true,
+      "to_Fields": [
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3001",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{header_structure_id}}",
+          "FieldName": "HeaderId",
+          "FieldDescription": "Header ID",
+          "IsKeyField": true,
+          "Sequence": 10,
+          "IsForeignField": false,
+          "FieldLength": 40,
+          "FieldType": "STRING"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3002",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{header_structure_id}}",
+          "FieldName": "DocumentNo",
+          "FieldDescription": "Document Number",
+          "IsKeyField": false,
+          "Sequence": 20,
+          "IsForeignField": false,
+          "FieldLength": 40,
+          "FieldType": "STRING"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3003",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{header_structure_id}}",
+          "FieldName": "HeaderName",
+          "FieldDescription": "Header Name",
+          "IsKeyField": false,
+          "Sequence": 30,
+          "IsForeignField": false,
+          "FieldLength": 100,
+          "FieldType": "STRING"
+        }
+      ]
+    },
+    {
+      "ID": "{{item_structure_id}}",
+      "ConfigUUID": "{{config_id}}",
+      "RootNode": false,
+      "SheetName": "Item",
+      "SheetNameUp": "Header",
+      "StartLine": 1,
+      "StartColumn": "A",
+      "HasFieldnameLine": true,
+      "HasDescLine": true,
+      "to_Fields": [
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3011",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{item_structure_id}}",
+          "FieldName": "HeaderId",
+          "FieldDescription": "Header ID",
+          "IsKeyField": true,
+          "Sequence": 10,
+          "IsForeignField": true,
+          "ForeignField": "HeaderId",
+          "FieldLength": 40,
+          "FieldType": "STRING"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3012",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{item_structure_id}}",
+          "FieldName": "ItemNo",
+          "FieldDescription": "Item Number",
+          "IsKeyField": true,
+          "Sequence": 20,
+          "IsForeignField": false,
+          "FieldLength": 20,
+          "FieldType": "STRING"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3013",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{item_structure_id}}",
+          "FieldName": "MaterialCode",
+          "FieldDescription": "Material Code",
+          "IsKeyField": false,
+          "Sequence": 30,
+          "IsForeignField": false,
+          "FieldLength": 40,
+          "FieldType": "STRING"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3014",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{item_structure_id}}",
+          "FieldName": "Quantity",
+          "FieldDescription": "Item Quantity",
+          "IsKeyField": false,
+          "Sequence": 40,
+          "IsForeignField": false,
+          "FieldLength": 13,
+          "FieldType": "DECIMAL",
+          "FieldDecimal": 3
+        }
+      ]
+    },
+    {
+      "ID": "{{schedule_structure_id}}",
+      "ConfigUUID": "{{config_id}}",
+      "RootNode": false,
+      "SheetName": "Schedule",
+      "SheetNameUp": "Item",
+      "StartLine": 1,
+      "StartColumn": "A",
+      "HasFieldnameLine": true,
+      "HasDescLine": true,
+      "to_Fields": [
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3021",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{schedule_structure_id}}",
+          "FieldName": "HeaderId",
+          "FieldDescription": "Header ID",
+          "IsKeyField": true,
+          "Sequence": 10,
+          "IsForeignField": true,
+          "ForeignField": "HeaderId",
+          "FieldLength": 40,
+          "FieldType": "STRING"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3022",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{schedule_structure_id}}",
+          "FieldName": "ItemNo",
+          "FieldDescription": "Item Number",
+          "IsKeyField": true,
+          "Sequence": 20,
+          "IsForeignField": true,
+          "ForeignField": "ItemNo",
+          "FieldLength": 20,
+          "FieldType": "STRING"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3023",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{schedule_structure_id}}",
+          "FieldName": "ScheduleLine",
+          "FieldDescription": "Schedule Line",
+          "IsKeyField": true,
+          "Sequence": 30,
+          "IsForeignField": false,
+          "FieldLength": 10,
+          "FieldType": "INTEGER"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3024",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{schedule_structure_id}}",
+          "FieldName": "DeliveryDate",
+          "FieldDescription": "Delivery Date",
+          "IsKeyField": false,
+          "Sequence": 40,
+          "IsForeignField": false,
+          "FieldLength": 10,
+          "FieldType": "DATE"
+        },
+        {
+          "ID": "3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3025",
+          "ConfigUUID": "{{config_id}}",
+          "StructureUUID": "{{schedule_structure_id}}",
+          "FieldName": "Quantity",
+          "FieldDescription": "Schedule Quantity",
+          "IsKeyField": false,
+          "Sequence": 50,
+          "IsForeignField": false,
+          "FieldLength": 13,
+          "FieldType": "DECIMAL",
+          "FieldDecimal": 3
+        }
+      ]
+    }
+  ]
+}
+
+###
+# Verify the created configuration with expanded structures and fields
+GET {{service}}/BatchImportConfig(ID={{config_id}},IsActiveEntity=true)?$expand=to_Structures($orderby=SheetName;$expand=to_Fields($orderby=Sequence))
+Authorization: {{basic_auth}}
+Accept: application/json

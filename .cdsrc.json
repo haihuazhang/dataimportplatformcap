@@ -7,7 +7,7 @@
     },
     "requires": {
         "db": {
-            "kind": "hana"
+            "kind": "postgres"
         }
     }
 }

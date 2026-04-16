@@ -1,6 +1,19 @@
 {
-  "requires": {
-    "[hybrid]": {
+  "[pg]": {
+    "requires": {
+      "db": {
+        "kind": "postgres",
+        "credentials": {
+          "host": "localhost",
+          "port": 5432,
+          "user": "haihuazhang",
+          "database": "batchimportcat"
+        }
+      }
+    }
+  },
+  "[hybrid]": {
+    "requires": {
       "db": {
         "binding": {
           "type": "cf",
