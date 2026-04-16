@@ -111,7 +111,7 @@ public class CdsBatchImportPersistenceService implements BatchImportPersistenceS
             message.setFileUUID(fileUUID);
             message.setLine(entry.line());
             message.setType(entry.type());
-            message.setCode(entry.code());
+            message.setCode(normalizeMessageCode(entry.code()));
             message.setMessage(entry.message());
             message.setDetails(entry.details());
             messageEntries.add(message);
@@ -119,6 +119,14 @@ public class CdsBatchImportPersistenceService implements BatchImportPersistenceS
 
         CqnInsert insert = Insert.into(BatchImportMessage_.class).entries(messageEntries);
         dataImportService.run(insert);
+    }
+
+    private String normalizeMessageCode(String code) {
+        if (code == null || code.isBlank()) {
+            return code;
+        }
+        String normalized = code.trim().toLowerCase();
+        return Character.toUpperCase(normalized.charAt(0)) + normalized.substring(1);
     }
 
     @Override
