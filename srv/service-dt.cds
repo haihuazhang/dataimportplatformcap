@@ -8,7 +8,15 @@ service DataImportService {
     entity BatchImportField     as projection on zzdt.BatchImportField;
     entity BatchImportFile      as projection on zzdt.BatchImportFile;
     entity BatchImportData      as projection on zzdt.BatchImportData;
-    entity BatchImportMessage   as projection on zzdt.BatchImportMessage;
+    entity BatchImportMessage   as projection on zzdt.BatchImportMessage {
+        *,
+        case
+            when Type = 'E' then 1
+            when Type = 'W' then 2
+            when Type = 'S' then 3
+            else 0
+        end as CodeCriticality : Int32
+    };
     entity JobInstance          as projection on batch.job_instance;
     entity JobExecution         as projection on batch.job_execution;
     entity JobExecutionContext  as projection on batch.job_execution_context;
@@ -108,7 +116,6 @@ annotate DataImportService.BatchImportFile with @(UI: {
         Label: 'Status',
         Data : [
             {Value: StatusText},
-            {Value: JobName},
         ]
     },
     FieldGroup #Job_FG    : {
@@ -394,17 +401,28 @@ annotate DataImportService.BatchImportData with @(
     UI.CreateHidden : true,
     UI.UpdateHidden : true,
     UI.DeleteHidden : true,
+    UI.PresentationVariant: {
+        SortOrder: [{
+            Property  : Line,
+            Descending: false
+        }]
+    },
     UI.LineItem     : [
         {Value: Line},
         {Value: StructureName},
-        {Value: DataJson}
+        {
+            Value: DataJson
+        }
     ],
     UI.Identification: [
         {Value: Line},
-        {Value: StructureName},
-        {Value: DataJson}
+        {Value: StructureName}
     ]
 );
+
+// annotate DataImportService.BatchImportData with {
+//     DataJson @UI.Hidden;
+// };
 
 annotate DataImportService.BatchImportMessage with @(
     UI.CreateHidden : true,
@@ -412,19 +430,26 @@ annotate DataImportService.BatchImportMessage with @(
     UI.DeleteHidden : true,
     UI.LineItem     : [
         {Value: Line},
-        {Value: Type},
-        {Value: Code},
+        {
+            $Type      : 'UI.DataField',
+            Value      : Code,
+            Criticality: CodeCriticality
+        },
         {Value: Message},
         {Value: Details}
     ],
     UI.Identification: [
         {Value: Line},
-        {Value: Type},
         {Value: Code},
         {Value: Message},
         {Value: Details}
     ]
 );
+
+annotate DataImportService.BatchImportMessage with {
+    Type            @UI.Hidden;
+    CodeCriticality @UI.Hidden;
+};
 
 
 annotate DataImportService.JobInstance with @UI: {

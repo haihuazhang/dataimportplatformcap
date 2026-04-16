@@ -95,7 +95,11 @@
       }
     },
     "resources": {
-      "css": []
+      "css": [
+        {
+          "uri": "ext/control/json/json-viewer.css"
+        }
+      ]
     },
     "routing": {
       "config": {},
@@ -137,7 +141,29 @@
           "options": {
             "settings": {
               "editableHeaderContent": false,
-              "entitySet": "BatchImportFile"
+              "entitySet": "BatchImportFile",
+              "controlConfiguration": {
+                "to_Data/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "columns": {
+                    "PreviewJsonColumn": {
+                      "header": "Data",
+                      "width": "15em",
+                      "importance": "High",
+                      "horizontalAlign": "Center",
+                      "template": "zzdtimpfile.ext.list.CustomColumnShowJSON",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "DataField::Line"
+                      },
+                      "availability": "Default",
+                      "properties": [
+                        "DataJson",
+                        "Line"
+                      ]
+                    }
+                  }
+                }
+              }
             }
           }
         }

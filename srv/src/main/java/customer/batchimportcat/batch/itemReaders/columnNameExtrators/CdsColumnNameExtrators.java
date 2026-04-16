@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.itemReaders.columnNameExtrators;
+package customer.batchimportcat.batch.itemreaders.columnNameExtrators;
 
 import java.util.Arrays;
 

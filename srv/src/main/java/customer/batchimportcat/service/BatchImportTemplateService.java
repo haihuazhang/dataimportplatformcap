@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,6 +8,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
+import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 
 @Service
 public class BatchImportTemplateService {

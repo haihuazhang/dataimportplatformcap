@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.itemReaders.rowMappers;
+package customer.batchimportcat.batch.itemreaders.rowMappers;
 
 import org.springframework.batch.extensions.excel.RowMapper;
 // import org.springframework.batch.extensions.excel.mapping.BeanWrapperRowMapper;

@@ -1,4 +1,4 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.dynamic.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,6 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public class DynamicNode implements Serializable {
     private final String structureUUID;
     private final String structureName;
@@ -15,35 +20,6 @@ public class DynamicNode implements Serializable {
 
     public DynamicNode(String structureUUID, String structureName, int lineNumber) {
         this(structureUUID, structureName, lineNumber, new LinkedHashMap<>(), new LinkedHashMap<>());
-    }
-
-    public DynamicNode(String structureUUID, String structureName, int lineNumber,
-            LinkedHashMap<String, Object> fields, LinkedHashMap<String, List<DynamicNode>> children) {
-        this.structureUUID = structureUUID;
-        this.structureName = structureName;
-        this.lineNumber = lineNumber;
-        this.fields = fields;
-        this.children = children;
-    }
-
-    public String getStructureUUID() {
-        return structureUUID;
-    }
-
-    public String getStructureName() {
-        return structureName;
-    }
-
-    public int getLineNumber() {
-        return lineNumber;
-    }
-
-    public LinkedHashMap<String, Object> getFields() {
-        return fields;
-    }
-
-    public LinkedHashMap<String, List<DynamicNode>> getChildren() {
-        return children;
     }
 
     public void putField(String fieldName, Object value) {

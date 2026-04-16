@@ -1,16 +1,15 @@
-package customer.batchimportcat.batch.dynamic;
+package customer.batchimportcat.batch.dynamic.types;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+
 public class BatchImportProcessResult implements Serializable {
+    @Getter
     private final List<BatchImportProcessMessage> messages = new ArrayList<>();
     private boolean hasErrors;
-
-    public List<BatchImportProcessMessage> getMessages() {
-        return messages;
-    }
 
     public boolean hasErrors() {
         return hasErrors;

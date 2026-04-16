@@ -22,6 +22,10 @@ import com.sap.cds.reflect.CdsType;
 import cds.gen.dataimportservice.BatchImportConfig;
 import cds.gen.dataimportservice.BatchImportField;
 import cds.gen.dataimportservice.BatchImportStructure;
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldDefinition;
+import customer.batchimportcat.batch.dynamic.types.DynamicFieldType;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
+import customer.batchimportcat.batch.dynamic.types.DynamicStructureDefinition;
 import customer.batchimportcat.batch.exceptions.BatchExceptionsUtil;
 
 @Component
@@ -32,27 +36,27 @@ public class DynamicConfigurationBuilder {
         this.cdsModel = cdsModel;
     }
 
-    public DynamicImportConfiguration fromServiceConfig(BatchImportConfig config) {
-        List<DynamicStructureDefinition> structures = Optional.ofNullable(config.getToStructures())
-                .orElse(List.of())
-                .stream()
-                .map(this::toStructureDefinition)
-                .toList();
-        DynamicImportConfiguration dynamicConfig = new DynamicImportConfiguration(
-                config.getId(),
-                config.getObject(),
-                config.getObjectName(),
-                config.getProcessKey(),
-                config.getImplementedByClass(),
-                config.getStructName(),
-                config.getSheetName(),
-                toInt(config.getStartLine(), 1),
-                defaultString(config.getStartColumn(), "A"),
-                structures);
-        return ensureLegacyCompatibility(dynamicConfig);
-    }
+    // public DynamicImportConfiguration fromServiceConfig(BatchImportConfig config) {
+    //     List<DynamicStructureDefinition> structures = Optional.ofNullable(config.getToStructures())
+    //             .orElse(List.of())
+    //             .stream()
+    //             .map(this::toStructureDefinition)
+    //             .toList();
+    //     DynamicImportConfiguration dynamicConfig = new DynamicImportConfiguration(
+    //             config.getId(),
+    //             config.getObject(),
+    //             config.getObjectName(),
+    //             config.getProcessKey(),
+    //             config.getImplementedByClass(),
+    //             config.getStructName(),
+    //             config.getSheetName(),
+    //             toInt(config.getStartLine(), 1),
+    //             defaultString(config.getStartColumn(), "A"),
+    //             structures);
+    //     return ensureLegacyCompatibility(dynamicConfig);
+    // }
 
-    public DynamicImportConfiguration fromExecutionContext(Map<String, Serializable> configData,
+    public DynamicImportConfiguration build(Map<String, Serializable> configData,
             List<Map<String, Serializable>> structures, List<Map<String, Serializable>> fields) {
         Map<String, List<DynamicFieldDefinition>> fieldsByStructure = fields.stream()
                 .map(this::toFieldDefinition)
