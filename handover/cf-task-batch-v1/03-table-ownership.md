@@ -89,7 +89,6 @@ v1 处理方式：
 - `MediaUrl`
 - `ArtifactChecksum`
 - `EntryPointClass`
-- `SpiVersion`
 - `Enabled`
 
 说明：
@@ -140,7 +139,6 @@ entity ProcessorArtifact : cuid, managed {
     MediaUrl            : String(500) @Common.Label:'{i18n>zzdt_MediaUrl}';
     ArtifactChecksum    : String(128) @Common.Label:'{i18n>zzdt_ArtifactChecksum}';
     EntryPointClass     : String(255) @Common.Label:'{i18n>zzdt_EntryPointClass}';
-    SpiVersion          : String(40)  @Common.Label:'{i18n>zzdt_SpiVersion}';
     Enabled             : Boolean     @Common.Label:'{i18n>zzdt_Enabled}' default true;
 }
 ```

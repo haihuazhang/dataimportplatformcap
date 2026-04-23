@@ -69,6 +69,23 @@ entity BatchImportFile : cuid, managed {
                              on to_Data.FileUUID = ID;
     to_Messages        : Composition of many BatchImportMessage
                              on to_Messages.FileUUID = ID;
+    to_Executions      : Composition of many BatchImportExecution
+                             on to_Executions.FileUUID = ID;
+}
+
+entity ProcessorArtifact : cuid, managed {
+    ProcessKey          : String(100) @Common.Label:'{i18n>zzdt_ProcessKey}';
+    Version             : String(40)  @Common.Label:'{i18n>zzdt_ProcessorVersion}';
+    Description         : String(255) @Common.Label:'{i18n>zzdt_Description}';
+    ArtifactStorageType : String(30)  @Common.Label:'{i18n>zzdt_ArtifactStorageType}' default 'DB_MEDIA';
+    MediaMimeType       : String      @Core.IsMediaType;
+    MediaFileName       : String(255) @Common.Label:'{i18n>zzdt_MediaFileName}';
+    MediaContent        : LargeBinary @Core.MediaType: MediaMimeType @Core.ContentDisposition.Filename: MediaFileName;
+    MediaSize           : Int64       @Common.Label:'{i18n>zzdt_MediaSize}';
+    MediaUrl            : String(500) @Common.Label:'{i18n>zzdt_MediaUrl}';
+    ArtifactChecksum    : String(128) @Common.Label:'{i18n>zzdt_ArtifactChecksum}';
+    EntryPointClass     : String(255) @Common.Label:'{i18n>zzdt_EntryPointClass}';
+    Enabled             : Boolean     @Common.Label:'{i18n>zzdt_Enabled}' default true;
 }
 
 entity BatchImportData : cuid, managed {
@@ -89,6 +106,29 @@ entity BatchImportMessage : cuid, managed {
     Details     : LargeString @Common.Label:'{i18n>zzdt_MessageDetails}';
     to_File     : Association to one BatchImportFile
                       on FileUUID = to_File.ID;
+}
+
+entity BatchImportExecution : cuid, managed {
+    FileUUID             : UUID        @Common.Label:'{i18n>zzdt_FileUUID}';
+    ConfigUUID           : UUID        @Common.Label:'{i18n>zzdt_ConfigUUID}';
+    ProcessKey           : String(100) @Common.Label:'{i18n>zzdt_ProcessKey}';
+    ProcessorArtifactID  : UUID        @Common.Label:'{i18n>zzdt_ProcessorArtifactID}';
+    ProcessorVersion     : String(40)  @Common.Label:'{i18n>zzdt_ProcessorVersion}';
+    ArtifactChecksum     : String(128) @Common.Label:'{i18n>zzdt_ArtifactChecksum}';
+    TaskHostApp          : String(100) @Common.Label:'{i18n>zzdt_TaskHostApp}';
+    TaskId               : String(100) @Common.Label:'{i18n>zzdt_TaskId}';
+    TaskName             : String(255) @Common.Label:'{i18n>zzdt_TaskName}';
+    TaskState            : String(30)  @Common.Label:'{i18n>zzdt_TaskState}';
+    FailureReason        : LargeString @Common.Label:'{i18n>zzdt_FailureReason}';
+    JobInstanceId        : String(100) @Common.Label:'{i18n>zzdt_JobInstanceId}';
+    StartedAt            : Timestamp   @Common.Label:'{i18n>zzdt_StartedAt}';
+    FinishedAt           : Timestamp   @Common.Label:'{i18n>zzdt_FinishedAt}';
+    to_File              : Association to one BatchImportFile
+                               on FileUUID = to_File.ID;
+    to_Config            : Association to one BatchImportConfig
+                               on ConfigUUID = to_Config.ID;
+    to_ProcessorArtifact : Association to one ProcessorArtifact
+                               on ProcessorArtifactID = to_ProcessorArtifact.ID;
 }
 
 @cds.persistence.skip

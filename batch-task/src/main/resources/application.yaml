@@ -1,0 +1,41 @@
+spring:
+  main:
+    web-application-type: none
+  profiles:
+    active: pg
+  batch:
+    job:
+      enabled: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: pg
+  datasource:
+    url: jdbc:postgresql://localhost:5432/batchimportcat
+    username: haihuazhang
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  sql:
+    init:
+      mode: never
+  batch:
+    jdbc:
+      initialize-schema: NEVER
+cds:
+  dataSource:
+    auto-config.enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: hybrid
+  batch:
+    jdbc:
+      initialize-schema: NEVER
+cds:
+  dataSource:
+    auto-config.enabled: true

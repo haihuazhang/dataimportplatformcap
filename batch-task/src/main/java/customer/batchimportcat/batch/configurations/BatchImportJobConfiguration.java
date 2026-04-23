@@ -1,0 +1,126 @@
+package customer.batchimportcat.batch.configurations;
+
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.TaskExecutorJobLauncher;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import customer.batchimportcat.batch.dynamic.DynamicDataFactory;
+import customer.batchimportcat.batch.dynamic.dto.DynamicNode;
+import customer.batchimportcat.batch.dynamic.types.DynamicImportConfiguration;
+import customer.batchimportcat.batch.itemreaders.DynamicHierarchyItemReader;
+import customer.batchimportcat.batch.itemwriters.ProcessKeyDelegatingItemWriter;
+import customer.batchimportcat.batch.itemwriters.ProcessKeyDelegatingStepState;
+import customer.batchimportcat.batch.listeners.BatchImportJobExecutionListener;
+import customer.batchimportcat.batch.listeners.ProcessKeyDelegatingStepExecutionListener;
+import customer.batchimportcat.batch.runtime.ProcessorRuntime;
+import customer.batchimportcat.batch.tasklets.GetBatchImportConfigTasklet;
+import customer.batchimportcat.batchtask.runtime.DynamicProcessorExecutor;
+import customer.batchimportcat.service.cqn.BatchImportPersistenceService;
+
+@Configuration
+public class BatchImportJobConfiguration {
+    @Bean
+    public Job batchImportJob(JobRepository jobRepository,
+            BatchImportJobExecutionListener batchImportJobExecutionListener,
+            @Qualifier("getBatchImportConfigStep") Step getBatchImportConfigStep,
+            @Qualifier("processingDynamicData") Step processingDynamicData) {
+        return new JobBuilder("dynamicBatchImportJob", jobRepository)
+                .listener(batchImportJobExecutionListener)
+                .start(getBatchImportConfigStep)
+                .next(processingDynamicData)
+                .build();
+    }
+
+    @Bean
+    public Step getBatchImportConfigStep(JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
+            @Qualifier("getBatchImportConfigTasklet") Tasklet getBatchImportConfigTasklet) {
+        return new StepBuilder("getBatchImportConfigStep", jobRepository)
+                .tasklet(getBatchImportConfigTasklet, transactionManager)
+                .build();
+    }
+
+    @Bean
+    @StepScope
+    public Tasklet getBatchImportConfigTasklet() {
+        return new GetBatchImportConfigTasklet();
+    }
+
+    @Bean
+    @StepScope
+    public DynamicHierarchyItemReader dynamicHierarchyItemReader(
+            @Value("#{jobExecutionContext['fileContent']}") byte[] fileContent,
+            @Value("#{jobExecutionContext['dynamicConfig']}") DynamicImportConfiguration dynamicConfig) {
+        return new DynamicHierarchyItemReader(fileContent, dynamicConfig);
+    }
+
+    @Bean
+    @StepScope
+    public ProcessKeyDelegatingStepState processKeyDelegatingStepState(
+            @Value("#{jobExecutionContext['dynamicConfig']}") DynamicImportConfiguration dynamicConfig,
+            @Value("#{jobParameters['fileUUID']}") String fileUUID,
+            @Value("#{jobParameters['executionUUID']}") String executionUUID,
+            DynamicDataFactory dynamicDataFactory,
+            DynamicProcessorExecutor dynamicProcessorExecutor,
+            ProcessorRuntime processorRuntime) {
+        return new ProcessKeyDelegatingStepState(dynamicConfig, fileUUID, executionUUID, dynamicDataFactory,
+                dynamicProcessorExecutor, processorRuntime);
+    }
+
+    @Bean
+    @StepScope
+    public ProcessKeyDelegatingItemWriter processKeyDelegatingItemWriter(
+            @Value("#{jobParameters['fileUUID']}") String fileUUID,
+            BatchImportPersistenceService batchImportPersistenceService,
+            ProcessKeyDelegatingStepState processKeyDelegatingStepState,
+            DynamicDataFactory dynamicDataFactory) {
+        return new ProcessKeyDelegatingItemWriter(fileUUID, batchImportPersistenceService, processKeyDelegatingStepState,
+                dynamicDataFactory);
+    }
+
+    @Bean
+    @StepScope
+    public ProcessKeyDelegatingStepExecutionListener processKeyDelegatingStepExecutionListener(
+            ProcessKeyDelegatingStepState processKeyDelegatingStepState) {
+        return new ProcessKeyDelegatingStepExecutionListener(processKeyDelegatingStepState);
+    }
+
+    @Bean
+    public Step processingDynamicData(JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
+            DynamicHierarchyItemReader dynamicHierarchyItemReader,
+            ProcessKeyDelegatingItemWriter processKeyDelegatingItemWriter,
+            ProcessKeyDelegatingStepExecutionListener processKeyDelegatingStepExecutionListener) {
+        return new StepBuilder("processingDynamicData", jobRepository)
+                .<DynamicNode, DynamicNode>chunk(50, transactionManager)
+                .reader(dynamicHierarchyItemReader)
+                .writer(processKeyDelegatingItemWriter)
+                .listener(processKeyDelegatingStepExecutionListener)
+                .build();
+    }
+
+    @Bean("syncJobLauncher")
+    public JobLauncher syncJobLauncher(JobRepository jobRepository) {
+        TaskExecutorJobLauncher jobLauncher = new TaskExecutorJobLauncher();
+        jobLauncher.setJobRepository(jobRepository);
+        jobLauncher.setTaskExecutor(new SyncTaskExecutor());
+        try {
+            jobLauncher.afterPropertiesSet();
+        } catch (Exception exception) {
+            throw new IllegalStateException("Failed to initialize sync job launcher.", exception);
+        }
+        return jobLauncher;
+    }
+}

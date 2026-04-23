@@ -15,7 +15,12 @@
         <cds.install-node.downloadUrl>https://nodejs.org/dist/</cds.install-node.downloadUrl>
     </properties>
     <modules>
+        <module>processor-sdk</module>
+        <module>processor-plugin-noop</module>
+        <module>processor-plugin-example-table01</module>
+        <module>processor-plugin-example-header-item-schedule</module>
         <module>srv</module>
+        <module>batch-task</module>
     </modules>
     <dependencyManagement>
         <dependencies>

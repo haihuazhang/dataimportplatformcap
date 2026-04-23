@@ -1,6 +1,5 @@
 package customer.batchimportcat.handlers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,8 @@ import cds.gen.dataimportservice.ImplementedByClass_;
 import cds.gen.dataimportservice.ProcessKeyValueHelp;
 import cds.gen.dataimportservice.ProcessKeyValueHelp_;
 import customer.batchimportcat.batch.dynamic.types.DynamicFieldType;
-import customer.batchimportcat.batch.processors.BatchImportProcessorRegistry;
-import customer.batchimportcat.service.BatchImportJobTriggerService;
+import customer.batchimportcat.service.BatchImportTaskTriggerService;
+import customer.batchimportcat.service.cqn.ProcessorArtifactCqnService;
 import customer.batchimportcat.utils.CheckDataVisitor;
 import customer.batchimportcat.utils.UnmanagedReportUtils;
 
@@ -43,15 +42,15 @@ import customer.batchimportcat.utils.UnmanagedReportUtils;
 @ServiceName(DataImportService_.CDS_NAME)
 public class DataImportServiceHandler implements EventHandler {
     private final CdsModel model;
-    private final BatchImportProcessorRegistry processorRegistry;
-    private final BatchImportJobTriggerService batchImportJobTriggerService;
+    private final ProcessorArtifactCqnService processorArtifactCqnService;
+    private final BatchImportTaskTriggerService batchImportTaskTriggerService;
 
     public DataImportServiceHandler(CdsModel model,
-            BatchImportProcessorRegistry processorRegistry,
-            BatchImportJobTriggerService batchImportJobTriggerService) {
+            ProcessorArtifactCqnService processorArtifactCqnService,
+            BatchImportTaskTriggerService batchImportTaskTriggerService) {
         this.model = model;
-        this.processorRegistry = processorRegistry;
-        this.batchImportJobTriggerService = batchImportJobTriggerService;
+        this.processorArtifactCqnService = processorArtifactCqnService;
+        this.batchImportTaskTriggerService = batchImportTaskTriggerService;
     }
 
     @After(event = CqnService.EVENT_CREATE, entity = BatchImportFile_.CDS_NAME)
@@ -68,7 +67,7 @@ public class DataImportServiceHandler implements EventHandler {
 
         ChangeSetContext changeSetContext = context.getChangeSetContext();
         if (changeSetContext == null) {
-            fileUUIDs.forEach(batchImportJobTriggerService::trigger);
+            fileUUIDs.forEach(batchImportTaskTriggerService::trigger);
             return;
         }
 
@@ -76,7 +75,7 @@ public class DataImportServiceHandler implements EventHandler {
             @Override
             public void afterClose(boolean completed) {
                 if (completed) {
-                    fileUUIDs.forEach(batchImportJobTriggerService::trigger);
+                    fileUUIDs.forEach(batchImportTaskTriggerService::trigger);
                 }
             }
         });
@@ -111,7 +110,7 @@ public class DataImportServiceHandler implements EventHandler {
 
     @On(event = CqnService.EVENT_READ, entity = ProcessKeyValueHelp_.CDS_NAME)
     public void getAllProcessKeys(CdsReadEventContext context) {
-        List<ProcessKeyValueHelp> rows = processorRegistry.getValueHelps().stream()
+        List<ProcessKeyValueHelp> rows = processorArtifactCqnService.getValueHelps().stream()
                 .map(row -> {
                     ProcessKeyValueHelp entity = ProcessKeyValueHelp.create();
                     entity.setProcessKey(String.valueOf(row.get("ProcessKey")));
@@ -135,8 +134,8 @@ public class DataImportServiceHandler implements EventHandler {
     }
 
     @On(event = CqnService.EVENT_READ, entity = ImplementedByClass_.CDS_NAME)
-    public void getAllImplementedByClass(CdsReadEventContext context) throws IOException {
-        context.setResult(buildResult(context.getCqn(), processorRegistry.getImplementedClasses()));
+    public void getAllImplementedByClass(CdsReadEventContext context) {
+        context.setResult(buildResult(context.getCqn(), processorArtifactCqnService.getImplementedClasses()));
     }
 
     private Result buildResult(CqnSelect select, List<? extends Map<String, ?>> rows) {

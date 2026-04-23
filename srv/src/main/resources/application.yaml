@@ -11,6 +11,15 @@ spring:
         quartz:
           jobStore:
             driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+batchimport:
+  task:
+    launcher-type: local
+    host-app: batchimportcat-batch-task
+    local:
+      shell: /bin/zsh
+      batch-task-jar: batch-task/target/batchimportcat-batch-task-exec.jar
+    cloudfoundry:
+      command-template: java -jar app.jar --spring.profiles.active=cloud --fileUUID={fileUUID} --executionUUID={executionUUID}
 # ---
 # spring:
 # #   config.activate.on-profile: default

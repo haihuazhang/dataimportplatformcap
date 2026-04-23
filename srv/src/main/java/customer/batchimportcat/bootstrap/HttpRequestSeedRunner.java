@@ -11,10 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +35,8 @@ public class HttpRequestSeedRunner {
     private static final Logger LOG = LoggerFactory.getLogger(HttpRequestSeedRunner.class);
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("^@([A-Za-z0-9_]+)\\s*=\\s*(.+)$");
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*([A-Za-z0-9_]+)\\s*}}");
+    private static final Pattern REQUEST_LINE_PATTERN = Pattern.compile("^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\s+(.+)$");
+    private static final int MAX_TEMPLATE_RESOLVE_ROUNDS = 10;
 
     @Value("${app.seed-http.file:http/example-header-item-schedule-config.http}")
     private String seedHttpFile;
@@ -51,66 +53,141 @@ public class HttpRequestSeedRunner {
     public void seedIfNeeded() {
         try {
             Path filePath = resolveFilePath(seedHttpFile);
-            SeedRequest request = parseHttpFile(filePath);
+            SeedScript script = parseHttpFile(filePath);
 
-            Map<String, String> variables = new HashMap<>(request.variables());
-            variables.put("host", "http://localhost:" + serverPort);
+            Map<String, String> rawVariables = new LinkedHashMap<>(script.variables());
+            rawVariables.put("host", "http://localhost:" + serverPort);
+            Map<String, String> resolvedVariables = resolveVariables(rawVariables);
 
-            String postUrl = resolveTemplate(request.postUrlTemplate(), variables);
-            String requestBody = resolveTemplate(request.bodyTemplate(), variables);
-            Map<String, String> headers = resolveHeaders(request.headersTemplate(), variables);
-
-            String configId = variables.get("config_id");
-            if (configId == null || configId.isBlank()) {
-                LOG.warn("Skip HTTP seed because @config_id is missing in {}", filePath);
+            if (isSeedAlreadyApplied(resolvedVariables)) {
+                LOG.info("Skip HTTP seed because config {} already exists", resolvedVariables.get("config_id"));
                 return;
             }
 
-            if (configExists(postUrl, configId, headers)) {
-                LOG.info("Skip HTTP seed because config {} already exists", configId);
-                return;
-            }
-
-            int status = postSeed(postUrl, headers, requestBody);
-            if (status == 200 || status == 201) {
-                LOG.info("HTTP seed completed from {}", filePath);
-            } else {
-                LOG.warn("HTTP seed returned unexpected status: {}", status);
-            }
+            executeRequestsInOrder(filePath, script.requests(), resolvedVariables);
+            LOG.info("HTTP seed completed from {}", filePath);
         } catch (Exception exception) {
-            LOG.warn("HTTP seed failed: {}", exception.getMessage());
+            LOG.warn("HTTP seed failed: {}", exception.getMessage(), exception);
         }
     }
 
-    private int postSeed(String postUrl, Map<String, String> headers, String requestBody)
+    private void executeRequestsInOrder(Path filePath, List<RequestBlock> requestBlocks, Map<String, String> variables)
             throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(postUrl))
-                .timeout(Duration.ofSeconds(timeoutSeconds))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8));
-        applyHeaders(builder, headers);
+        Path baseDir = filePath.getParent() == null ? Paths.get(".").toAbsolutePath() : filePath.getParent();
+        for (int index = 0; index < requestBlocks.size(); index++) {
+            RequestBlock block = requestBlocks.get(index);
+            ResolvedRequest request = resolveRequest(block, variables, baseDir);
+            HttpResponse<String> response = sendRequest(request);
+            int status = response.statusCode();
+            if (!isSuccessStatus(status)) {
+                throw new IllegalStateException("HTTP seed request failed at index " + index
+                        + " with status " + status
+                        + ": " + block.method() + " " + block.urlTemplate()
+                        + " response=" + shorten(response.body(), 400));
+            }
 
-        HttpResponse<String> response = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-        return response.statusCode();
+            LOG.info("HTTP seed request {} {} -> {}", request.method(), request.url(), status);
+        }
     }
 
-    private boolean configExists(String postUrl, String configId, Map<String, String> headers)
-            throws IOException, InterruptedException {
-        String getUrl = postUrl + "(ID=" + configId + ",IsActiveEntity=true)";
+    private HttpResponse<String> sendRequest(ResolvedRequest request) throws IOException, InterruptedException {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(request.url())
+                .timeout(Duration.ofSeconds(timeoutSeconds));
+        applyHeaders(builder, request.headers());
+
+        HttpRequest.BodyPublisher bodyPublisher = request.body() == null
+                ? HttpRequest.BodyPublishers.noBody()
+                : HttpRequest.BodyPublishers.ofByteArray(request.body());
+
+        switch (request.method()) {
+            case "GET":
+                builder.GET();
+                break;
+            case "POST":
+                builder.POST(bodyPublisher);
+                break;
+            case "PUT":
+                builder.PUT(bodyPublisher);
+                break;
+            case "PATCH":
+                builder.method("PATCH", bodyPublisher);
+                break;
+            case "DELETE":
+                if (request.body() == null) {
+                    builder.DELETE();
+                } else {
+                    builder.method("DELETE", bodyPublisher);
+                }
+                break;
+            case "HEAD":
+            case "OPTIONS":
+                builder.method(request.method(), HttpRequest.BodyPublishers.noBody());
+                break;
+            default:
+                throw new IllegalStateException("Unsupported HTTP method: " + request.method());
+        }
+
+        return httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+    }
+
+    private boolean isSeedAlreadyApplied(Map<String, String> variables) {
+        String service = variables.get("service");
+        String configId = variables.get("config_id");
+        if (isBlank(service) || isBlank(configId)) {
+            return false;
+        }
+
+        String getUrl = service + "/BatchImportConfig(ID=" + configId + ",IsActiveEntity=true)";
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(getUrl))
                 .timeout(Duration.ofSeconds(timeoutSeconds))
-                .GET();
-        applyHeaders(builder, headers);
+                .GET()
+                .header("Accept", "application/json");
 
-        HttpResponse<String> response = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
-        return response.statusCode() == 200;
+        String basicAuth = variables.get("basic_auth");
+        if (!isBlank(basicAuth)) {
+            builder.header("Authorization", basicAuth);
+        }
+
+        try {
+            HttpResponse<String> response = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                return true;
+            }
+            if (response.statusCode() != 404) {
+                LOG.warn("Unable to determine seed existence, status={} url={}", response.statusCode(), getUrl);
+            }
+        } catch (Exception exception) {
+            LOG.warn("Failed to check seed existence: {}", exception.getMessage());
+        }
+        return false;
     }
 
     private void applyHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             builder.header(entry.getKey(), entry.getValue());
         }
+    }
+
+    private ResolvedRequest resolveRequest(RequestBlock requestBlock, Map<String, String> variables, Path baseDir)
+            throws IOException {
+        String resolvedUrl = resolveTemplate(requestBlock.urlTemplate(), variables);
+        Map<String, String> resolvedHeaders = resolveHeaders(requestBlock.headersTemplate(), variables);
+        String resolvedBody = resolveTemplate(requestBlock.bodyTemplate(), variables).trim();
+
+        byte[] bodyBytes = null;
+        if (!resolvedBody.isEmpty()) {
+            if (resolvedBody.startsWith("<")) {
+                String filePathTemplate = resolvedBody.substring(1).trim();
+                Path payloadPath = resolvePayloadPath(baseDir, filePathTemplate);
+                bodyBytes = Files.readAllBytes(payloadPath);
+            } else {
+                bodyBytes = resolvedBody.getBytes(StandardCharsets.UTF_8);
+            }
+        }
+
+        return new ResolvedRequest(requestBlock.method(), URI.create(resolvedUrl), resolvedHeaders, bodyBytes);
     }
 
     private Map<String, String> resolveHeaders(Map<String, String> headersTemplate, Map<String, String> variables) {
@@ -121,63 +198,92 @@ public class HttpRequestSeedRunner {
         return resolvedHeaders;
     }
 
-    private SeedRequest parseHttpFile(Path filePath) throws IOException {
+    private SeedScript parseHttpFile(Path filePath) throws IOException {
         List<String> lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
         Map<String, String> variables = parseVariables(lines);
+        List<RequestBlock> requestBlocks = parseRequestBlocks(lines);
+        if (requestBlocks.isEmpty()) {
+            throw new IllegalStateException("No HTTP request block found in " + filePath);
+        }
+        return new SeedScript(variables, requestBlocks);
+    }
 
-        String postUrlTemplate = null;
-        Map<String, String> headersTemplate = new LinkedHashMap<>();
-        List<String> bodyLines = new ArrayList<>();
-
-        boolean inHeaders = false;
-        boolean inBody = false;
+    private List<RequestBlock> parseRequestBlocks(List<String> lines) {
+        List<RequestBlock> requests = new ArrayList<>();
+        List<String> section = new ArrayList<>();
 
         for (String line : lines) {
-            if (line.startsWith("POST ")) {
-                postUrlTemplate = line.substring(5).trim();
-                inHeaders = true;
-                inBody = false;
+            if (line.trim().startsWith("###")) {
+                appendRequestSection(section, requests);
+                section.clear();
+                continue;
+            }
+            section.add(line);
+        }
+        appendRequestSection(section, requests);
+
+        return requests;
+    }
+
+    private void appendRequestSection(List<String> section, List<RequestBlock> requests) {
+        if (section.isEmpty()) {
+            return;
+        }
+
+        int requestLineIndex = -1;
+        Matcher requestMatcher = null;
+        for (int index = 0; index < section.size(); index++) {
+            String trimmed = section.get(index).trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#") || trimmed.startsWith("@")) {
                 continue;
             }
 
-            if (postUrlTemplate == null) {
-                continue;
+            Matcher matcher = REQUEST_LINE_PATTERN.matcher(trimmed);
+            if (matcher.matches()) {
+                requestLineIndex = index;
+                requestMatcher = matcher;
+                break;
+            }
+            return;
+        }
+
+        if (requestLineIndex < 0 || requestMatcher == null) {
+            return;
+        }
+
+        String method = requestMatcher.group(1);
+        String urlTemplate = requestMatcher.group(2).trim();
+
+        Map<String, String> headersTemplate = new LinkedHashMap<>();
+        int cursor = requestLineIndex + 1;
+        while (cursor < section.size()) {
+            String headerLine = section.get(cursor);
+            if (headerLine.trim().isEmpty()) {
+                cursor++;
+                break;
             }
 
-            if (inHeaders) {
-                if (line.trim().isEmpty()) {
-                    inHeaders = false;
-                    inBody = true;
-                    continue;
-                }
-
-                int colonIndex = line.indexOf(':');
-                if (colonIndex > 0) {
-                    String key = line.substring(0, colonIndex).trim();
-                    String value = line.substring(colonIndex + 1).trim();
-                    headersTemplate.put(key, value);
-                }
-                continue;
+            int colonIndex = headerLine.indexOf(':');
+            if (colonIndex > 0) {
+                String key = headerLine.substring(0, colonIndex).trim();
+                String value = headerLine.substring(colonIndex + 1).trim();
+                headersTemplate.put(key, value);
             }
+            cursor++;
+        }
 
-            if (inBody) {
-                if (line.startsWith("###")) {
-                    break;
-                }
-                bodyLines.add(line);
-            }
+        List<String> bodyLines = new ArrayList<>();
+        while (cursor < section.size()) {
+            bodyLines.add(section.get(cursor));
+            cursor++;
         }
 
         String bodyTemplate = String.join(System.lineSeparator(), bodyLines).trim();
-        if (postUrlTemplate == null || bodyTemplate.isEmpty()) {
-            throw new IllegalStateException("Unable to parse POST request block from " + filePath);
-        }
-
-        return new SeedRequest(variables, postUrlTemplate, headersTemplate, bodyTemplate);
+        requests.add(new RequestBlock(method, urlTemplate, headersTemplate, bodyTemplate));
     }
 
     private Map<String, String> parseVariables(List<String> lines) {
-        Map<String, String> variables = new LinkedHashMap<>();
+        Map<String, String> rawVariables = new LinkedHashMap<>();
         for (String line : lines) {
             Matcher matcher = VARIABLE_PATTERN.matcher(line.trim());
             if (!matcher.matches()) {
@@ -186,19 +292,37 @@ public class HttpRequestSeedRunner {
 
             String key = matcher.group(1).trim();
             String value = matcher.group(2).trim();
-            variables.put(key, value);
+            rawVariables.put(key, value);
         }
+        return rawVariables;
+    }
 
-        Map<String, String> resolvedVariables = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
-            resolvedVariables.put(entry.getKey(), resolveTemplate(entry.getValue(), variables));
+    private Map<String, String> resolveVariables(Map<String, String> rawVariables) {
+        Map<String, String> resolved = new LinkedHashMap<>(rawVariables);
+        for (int round = 0; round < MAX_TEMPLATE_RESOLVE_ROUNDS; round++) {
+            boolean changed = false;
+            for (Map.Entry<String, String> entry : rawVariables.entrySet()) {
+                String key = entry.getKey();
+                String next = resolveTemplate(entry.getValue(), resolved);
+                if (!Objects.equals(resolved.get(key), next)) {
+                    resolved.put(key, next);
+                    changed = true;
+                }
+            }
+            if (!changed) {
+                break;
+            }
         }
-        return resolvedVariables;
+        return resolved;
     }
 
     private String resolveTemplate(String text, Map<String, String> variables) {
+        if (text == null || text.isEmpty()) {
+            return "";
+        }
+
         String resolved = text;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < MAX_TEMPLATE_RESOLVE_ROUNDS; i++) {
             Matcher matcher = PLACEHOLDER_PATTERN.matcher(resolved);
             if (!matcher.find()) {
                 return resolved;
@@ -214,6 +338,19 @@ public class HttpRequestSeedRunner {
             resolved = buffer.toString();
         }
         return resolved;
+    }
+
+    private Path resolvePayloadPath(Path baseDir, String payloadPathTemplate) {
+        Path payloadPath = Paths.get(payloadPathTemplate);
+        if (!payloadPath.isAbsolute()) {
+            payloadPath = baseDir.resolve(payloadPathTemplate);
+        }
+
+        Path normalized = payloadPath.normalize().toAbsolutePath();
+        if (!Files.exists(normalized)) {
+            throw new IllegalStateException("HTTP seed binary payload file not found: " + normalized);
+        }
+        return normalized;
     }
 
     private Path resolveFilePath(String configuredPath) {
@@ -232,10 +369,40 @@ public class HttpRequestSeedRunner {
         throw new IllegalStateException("HTTP seed file not found: " + configuredPath);
     }
 
-    private record SeedRequest(
+    private boolean isSuccessStatus(int statusCode) {
+        return statusCode >= 200 && statusCode < 300;
+    }
+
+    private String shorten(String text, int maxLength) {
+        if (text == null) {
+            return "";
+        }
+        if (text.length() <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength) + "...";
+    }
+
+    private boolean isBlank(String text) {
+        return text == null || text.isBlank();
+    }
+
+    private record SeedScript(
             Map<String, String> variables,
-            String postUrlTemplate,
+            List<RequestBlock> requests) {
+    }
+
+    private record RequestBlock(
+            String method,
+            String urlTemplate,
             Map<String, String> headersTemplate,
             String bodyTemplate) {
+    }
+
+    private record ResolvedRequest(
+            String method,
+            URI url,
+            Map<String, String> headers,
+            byte[] body) {
     }
 }
