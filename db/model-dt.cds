@@ -116,6 +116,7 @@ entity BatchImportExecution : cuid, managed {
     ProcessorVersion     : String(40)  @Common.Label:'{i18n>zzdt_ProcessorVersion}';
     ArtifactChecksum     : String(128) @Common.Label:'{i18n>zzdt_ArtifactChecksum}';
     TaskHostApp          : String(100) @Common.Label:'{i18n>zzdt_TaskHostApp}';
+    LauncherType         : String(30)  @Common.Label:'{i18n>zzdt_LauncherType}';
     TaskId               : String(100) @Common.Label:'{i18n>zzdt_TaskId}';
     TaskName             : String(255) @Common.Label:'{i18n>zzdt_TaskName}';
     TaskState            : String(30)  @Common.Label:'{i18n>zzdt_TaskState}';

@@ -16,6 +16,7 @@ public class TaskLaunchRequestFactory {
 
     public TaskLaunchRequest create(String executionUUID, BatchImportFileLaunchContext fileContext,
             ProcessorArtifactBinding artifact) {
+        String launcherType = launcherType();
         return new TaskLaunchRequest(
                 executionUUID,
                 fileContext.fileUUID(),
@@ -26,7 +27,7 @@ public class TaskLaunchRequestFactory {
                 properties.getHostApp(),
                 buildTaskName(executionUUID),
                 buildCommand(executionUUID, fileContext.fileUUID()),
-                properties.getLauncherType(),
+                launcherType,
                 properties.getMemoryMb(),
                 properties.getDiskMb(),
                 properties.getEnvironment(),
@@ -35,6 +36,14 @@ public class TaskLaunchRequestFactory {
 
     public String taskHostApp() {
         return properties.getHostApp();
+    }
+
+    public String launcherType() {
+        String launcherType = properties.getLauncherType();
+        if (launcherType == null || launcherType.isBlank()) {
+            return "local";
+        }
+        return launcherType.trim().toLowerCase();
     }
 
     private String buildTaskName(String executionUUID) {
@@ -46,7 +55,7 @@ public class TaskLaunchRequestFactory {
     }
 
     private String buildCommand(String executionUUID, String fileUUID) {
-        String launcherType = properties.getLauncherType() == null ? "local" : properties.getLauncherType().trim().toLowerCase();
+        String launcherType = launcherType();
         if ("cloudfoundry".equals(launcherType)) {
             return interpolate(properties.getCloudfoundry().getCommandTemplate(), executionUUID, fileUUID);
         }

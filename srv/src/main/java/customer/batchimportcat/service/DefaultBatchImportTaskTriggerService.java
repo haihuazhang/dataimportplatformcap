@@ -52,7 +52,8 @@ public class DefaultBatchImportTaskTriggerService implements BatchImportTaskTrig
         ProcessorArtifactBinding artifact = processorArtifactCqnService
                 .getRequiredEnabledArtifact(configContext.processKey());
         String executionUUID = batchImportExecutionCqnService.createSubmittedExecution(fileContext, artifact,
-                taskLaunchRequestFactory.taskHostApp());
+            taskLaunchRequestFactory.taskHostApp(),
+            taskLaunchRequestFactory.launcherType());
         try {
             batchImportFileCqnService.markQueued(fileUUID, null);
             TaskLaunchRequest request = taskLaunchRequestFactory.create(executionUUID, fileContext, artifact);

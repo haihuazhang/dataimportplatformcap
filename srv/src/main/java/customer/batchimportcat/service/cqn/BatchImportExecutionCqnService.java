@@ -31,7 +31,7 @@ public class BatchImportExecutionCqnService {
     }
 
     public String createSubmittedExecution(BatchImportFileLaunchContext fileContext, ProcessorArtifactBinding artifact,
-            String taskHostApp) {
+            String taskHostApp, String launcherType) {
         BatchImportExecution execution = BatchImportExecution.create();
         execution.setId(UUID.randomUUID().toString());
         execution.setFileUUID(fileContext.fileUUID());
@@ -41,6 +41,7 @@ public class BatchImportExecutionCqnService {
         execution.setProcessorVersion(artifact.version());
         execution.setArtifactChecksum(artifact.artifactChecksum());
         execution.setTaskHostApp(taskHostApp);
+        execution.setLauncherType(launcherType);
         execution.setTaskState(TaskState.SUBMITTED.value());
 
         dataImportService.run(Insert.into(BatchImportExecution_.class).entry(execution));
@@ -50,6 +51,7 @@ public class BatchImportExecutionCqnService {
     public void markLaunchAccepted(String executionUUID, TaskLaunchResult launchResult) {
         Map<String, Object> data = new HashMap<>();
         data.put("TaskState", TaskState.SUBMITTED.value());
+        data.put("LauncherType", launchResult.launcherType());
         data.put("TaskId", launchResult.platformTaskId());
         data.put("TaskName", launchResult.platformTaskName());
         data.put("FailureReason", null);

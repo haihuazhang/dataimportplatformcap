@@ -124,31 +124,31 @@ annotate DataImportService.BatchImportFile with @(UI: {
         Label: 'Status',
         Data : [{Value: StatusText}, ]
     },
-    FieldGroup #Job_FG    : {
-        $Type: 'UI.FieldGroupType',
-        Label: 'Job',
-        Data : [{
-            Value         : JobName,
-            $Type         : 'UI.DataFieldWithIntentBasedNavigation',
-            SemanticObject: 'zzdtimplog',
-            Action        : 'display',
-            Mapping       : [{
-                LocalProperty         : JobName,
-                SemanticObjectProperty: 'JOB_INSTANCE_ID'
-            }]
-        }]
-    },
+    // FieldGroup #Job_FG    : {
+    //     $Type: 'UI.FieldGroupType',
+    //     Label: 'Job',
+    //     Data : [{
+    //         Value         : JobName,
+    //         $Type         : 'UI.DataFieldWithIntentBasedNavigation',
+    //         SemanticObject: 'zzdtimplog',
+    //         Action        : 'display',
+    //         Mapping       : [{
+    //             LocalProperty         : JobName,
+    //             SemanticObjectProperty: 'JOB_INSTANCE_ID'
+    //         }]
+    //     }]
+    // },
     Facets                : [
         {
             ID    : 'General',
             $Type : 'UI.ReferenceFacet',
             Target: '@UI.FieldGroup#General_FG'
         },
-        {
-            ID    : 'Job',
-            $Type : 'UI.ReferenceFacet',
-            Target: '@UI.FieldGroup#Job_FG'
-        },
+        // {
+        //     ID    : 'Job',
+        //     $Type : 'UI.ReferenceFacet',
+        //     Target: '@UI.FieldGroup#Job_FG'
+        // },
         {
             ID    : 'Status',
             $Type : 'UI.ReferenceFacet',
@@ -158,6 +158,11 @@ annotate DataImportService.BatchImportFile with @(UI: {
             ID    : 'Data',
             $Type : 'UI.ReferenceFacet',
             Target: 'to_Data/@UI.LineItem'
+        },
+        {
+            ID    : 'Executions',
+            $Type : 'UI.ReferenceFacet',
+            Target: 'to_Executions/@UI.LineItem'
         },
         {
             ID    : 'Messages',
@@ -254,16 +259,28 @@ annotate DataImportService.BatchImportExecution with @UI: {
         {Value: FileUUID},
         {Value: ProcessKey},
         {Value: ProcessorVersion},
+        {Value: LauncherType},
         {Value: TaskState},
         {Value: TaskName},
-        {Value: JobInstanceId},
+        // {Value: JobInstanceId},
+        {
+            Value         : JobInstanceId,
+            $Type         : 'UI.DataFieldWithIntentBasedNavigation',
+            SemanticObject: 'zzdtimplog',
+            Action        : 'display',
+            Mapping       : [{
+                LocalProperty         : JobInstanceId,
+                SemanticObjectProperty: 'JOB_INSTANCE_ID'
+            }]
+        },
         {Value: StartedAt},
         {Value: FinishedAt}
     ],
     SelectionFields: [
         ProcessKey,
         TaskState,
-        ProcessorVersion
+        ProcessorVersion,
+        LauncherType
     ]
 };
 

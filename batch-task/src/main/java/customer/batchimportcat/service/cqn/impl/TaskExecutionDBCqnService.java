@@ -15,7 +15,7 @@ import customer.batchimportcat.service.cqn.TaskExecutionPersistenceService;
 
 @Service
 public class TaskExecutionDBCqnService implements TaskExecutionPersistenceService {
-    private static final String EXECUTION_ENTITY = "zzdt_BatchImportExecution";
+    private static final String EXECUTION_ENTITY = "zzdt.BatchImportExecution";
 
     private final PersistenceService db;
 

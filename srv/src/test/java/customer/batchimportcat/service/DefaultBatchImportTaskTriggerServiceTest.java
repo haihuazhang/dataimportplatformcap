@@ -57,7 +57,7 @@ class DefaultBatchImportTaskTriggerServiceTest {
         assertEquals("exec-1", ref.executionUUID());
         assertEquals(TaskState.SUBMITTED.value(), ref.taskState());
         assertEquals(List.of(
-                "create:exec-1:file-1:artifact-1",
+            "create:exec-1:file-1:artifact-1:local",
                 "queued:file-1:null",
                 "launch:exec-1:file-1",
                 "accepted:exec-1:task-1"),
@@ -100,7 +100,7 @@ class DefaultBatchImportTaskTriggerServiceTest {
         assertEquals("exec-2", ref.executionUUID());
         assertEquals(TaskState.FAILED.value(), ref.taskState());
         assertEquals(List.of(
-                "create:exec-2:file-2:artifact-2",
+            "create:exec-2:file-2:artifact-2:local",
                 "queued:file-2:null",
                 "failed:exec-2:launcher rejected",
                 "error:file-2:null"),
@@ -173,8 +173,9 @@ class DefaultBatchImportTaskTriggerServiceTest {
 
         @Override
         public String createSubmittedExecution(BatchImportFileLaunchContext fileContext, ProcessorArtifactBinding artifact,
-                String taskHostApp) {
-            calls.add("create:" + executionUUID + ":" + fileContext.fileUUID() + ":" + artifact.id());
+                String taskHostApp, String launcherType) {
+            calls.add("create:" + executionUUID + ":" + fileContext.fileUUID() + ":" + artifact.id()
+                    + ":" + launcherType);
             return executionUUID;
         }
 
@@ -217,6 +218,11 @@ class DefaultBatchImportTaskTriggerServiceTest {
         @Override
         public String taskHostApp() {
             return "batchimportcat-batch-task";
+        }
+
+        @Override
+        public String launcherType() {
+            return "local";
         }
 
         private static customer.batchimportcat.model.TaskLaunchProperties defaultProperties() {
