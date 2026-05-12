@@ -116,14 +116,19 @@ annotate DataImportService.BatchImportFile with @(UI: {
             {
                 Value        : FileName,
                 ![@UI.Hidden]: true
+            },
+            {
+                Value      : StatusText,
+                Criticality: StatusCriticality,
+                $Type      : 'UI.DataField'
             }
         ]
     },
-    FieldGroup #Status_FG : {
-        $Type: 'UI.FieldGroupType',
-        Label: 'Status',
-        Data : [{Value: StatusText}, ]
-    },
+    // FieldGroup #Status_FG : {
+    //     $Type: 'UI.FieldGroupType',
+    //     Label: 'Status',
+    //     Data : [{Value: StatusText}, ]
+    // },
     // FieldGroup #Job_FG    : {
     //     $Type: 'UI.FieldGroupType',
     //     Label: 'Job',
@@ -142,32 +147,36 @@ annotate DataImportService.BatchImportFile with @(UI: {
         {
             ID    : 'General',
             $Type : 'UI.ReferenceFacet',
-            Target: '@UI.FieldGroup#General_FG'
+            Target: '@UI.FieldGroup#General_FG',
+            Label : 'General'
         },
         // {
         //     ID    : 'Job',
         //     $Type : 'UI.ReferenceFacet',
         //     Target: '@UI.FieldGroup#Job_FG'
         // },
-        {
-            ID    : 'Status',
-            $Type : 'UI.ReferenceFacet',
-            Target: '@UI.FieldGroup#Status_FG'
-        },
+        // {
+        //     ID    : 'Status',
+        //     $Type : 'UI.ReferenceFacet',
+        //     Target: '@UI.FieldGroup#Status_FG'
+        // },
         {
             ID    : 'Data',
             $Type : 'UI.ReferenceFacet',
-            Target: 'to_Data/@UI.LineItem'
+            Target: 'to_Data/@UI.LineItem',
+            Label : 'Data'
         },
         {
             ID    : 'Executions',
             $Type : 'UI.ReferenceFacet',
-            Target: 'to_Executions/@UI.LineItem'
+            Target: 'to_Executions/@UI.LineItem',
+            Label : 'Executions'
         },
         {
             ID    : 'Messages',
             $Type : 'UI.ReferenceFacet',
-            Target: 'to_Messages/@UI.LineItem'
+            Target: 'to_Messages/@UI.LineItem',
+            Label : 'Messages'
         },
     ],
     LineItem              : [
