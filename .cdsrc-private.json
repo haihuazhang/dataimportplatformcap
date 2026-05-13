@@ -18,10 +18,10 @@
         "binding": {
           "type": "cf",
           "apiEndpoint": "https://api.cf.us10-001.hana.ondemand.com",
-          "org": "5a74830btrial",
+          "org": "a83421e9trial",
           "space": "dev",
-          "instance": "batchimportcat-cds-db",
-          "key": "batchimportcat-cds-db-key",
+          "instance": "batchimportcat-db",
+          "key": "batchimportcat-db-key",
           "resolved": false
         },
         "kind": "hana",

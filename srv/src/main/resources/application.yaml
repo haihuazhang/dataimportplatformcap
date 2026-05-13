@@ -5,12 +5,6 @@ spring:
   batch:
     job:
       enabled: false
-  quartz:
-    properties:
-      org:
-        quartz:
-          jobStore:
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 batchimport:
   task:
     launcher-type: local
@@ -19,7 +13,7 @@ batchimport:
       shell: /bin/zsh
       batch-task-jar: batch-task/target/batchimportcat-batch-task-exec.jar
     cloudfoundry:
-      command-template: java -jar app.jar --spring.profiles.active=cloud --fileUUID={fileUUID} --executionUUID={executionUUID}
+      command-template: java -jar app.jar --fileUUID={fileUUID} --executionUUID={executionUUID}
 # ---
 # spring:
 # #   config.activate.on-profile: default
@@ -62,6 +56,11 @@ spring:
     job-store-type: jdbc
     jdbc:
       initialize-schema: NEVER
+    properties:
+      org:
+        quartz:
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 cds:
   dataSource:
     auto-config.enabled: true
@@ -76,6 +75,32 @@ spring:
     job-store-type: jdbc
     jdbc:
       initialize-schema: NEVER
+    properties:
+      org:
+        quartz:
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+cds:
+  dataSource:
+    auto-config.enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: cloud
+  batch:
+    jdbc:
+      initialize-schema: NEVER
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: NEVER
+    properties:
+      org:
+        quartz:
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 cds:
   dataSource:
     auto-config.enabled: true

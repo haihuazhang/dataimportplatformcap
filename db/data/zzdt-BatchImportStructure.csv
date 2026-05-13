@@ -1,0 +1,6 @@
+ID;ConfigUUID;RootNode;SheetName;SheetNameUp;StartLine;StartColumn;HasFieldnameLine;HasDescLine
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;true;Header;;1;A;true;true
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2002;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;false;Item;Header;1;A;true;true
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2003;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;false;Schedule;Item;1;A;true;true
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2004;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1002;true;NoopRoot;;1;A;true;true
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2005;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1003;true;ZZTable01;;1;A;true;true

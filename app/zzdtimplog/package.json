@@ -9,7 +9,12 @@
     ],
     "main": "webapp/index.html",
     "scripts": {
+        "build": "ui5 build --config=ui5.yaml --clean-dest --dest dist",
+        "build:mta": "npm run build && cp xs-app.json dist/xs-app.json && cd dist && bestzip ../zzdtimplog.zip *",
         "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf"
     },
-    "devDependencies": { }
+    "devDependencies": {
+        "@ui5/cli": "^4",
+        "bestzip": "^2.2.1"
+    }
 }

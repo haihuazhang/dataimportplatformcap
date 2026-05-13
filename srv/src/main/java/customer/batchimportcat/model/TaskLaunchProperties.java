@@ -38,6 +38,6 @@ public class TaskLaunchProperties {
     public static class CloudFoundry {
         private String cfBinary = "cf";
         private String commandTemplate =
-                "java -jar app.jar --spring.profiles.active=cloud --fileUUID={fileUUID} --executionUUID={executionUUID}";
+                "java -jar app.jar --fileUUID={fileUUID} --executionUUID={executionUUID}";
     }
 }

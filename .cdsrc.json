@@ -6,8 +6,12 @@
         "fiori_preview": true
     },
     "requires": {
-        "db": {
-            "kind": "postgres"
-        }
+        "[production]": {
+            "auth": "xsuaa"
+        },
+        "db": "hana",
+        "destinations": true,
+        "html5-repo": true,
+        "workzone": true
     }
 }

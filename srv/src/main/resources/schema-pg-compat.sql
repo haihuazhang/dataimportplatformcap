@@ -1,2 +1,0 @@
-ALTER TABLE qrtz_calendars
-ADD COLUMN IF NOT EXISTS description VARCHAR(250);

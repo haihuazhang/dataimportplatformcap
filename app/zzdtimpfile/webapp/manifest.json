@@ -57,6 +57,10 @@
       "phone": true
     }
   },
+  "sap.cloud": {
+    "public": true,
+    "service": "batchimportcat.service"
+  },
   "sap.ui5": {
     "flexEnabled": true,
     "dependencies": {

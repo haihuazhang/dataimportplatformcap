@@ -10,7 +10,12 @@
     "app/zzdtimpfile",
     "app/zzdtimplog"
   ],
+  "scripts": {
+    "build": "cds build --production",
+    "build:mta": "mbt build"
+  },
   "dependencies": {
+    "@cap-js/hana": "^2",
     "@cap-js/postgres": "^2"
   },
   "devDependencies": {
