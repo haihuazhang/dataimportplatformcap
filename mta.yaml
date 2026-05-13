@@ -77,8 +77,8 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npm run build:mta
-      build-result: .
+        - npm run build
+      build-result: dist
       supported-platforms: []
 
   - name: zzdtimpfile
@@ -88,8 +88,8 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npm run build:mta
-      build-result: .
+        - npm run build
+      build-result: dist
       supported-platforms: []
 
   - name: zzdtimplog
@@ -99,8 +99,8 @@ modules:
       builder: custom
       commands:
         - npm install
-        - npm run build:mta
-      build-result: .
+        - npm run build
+      build-result: dist
       supported-platforms: []
 
   - name: batchimportcat-app-deployer

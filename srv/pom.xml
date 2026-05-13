@@ -164,6 +164,7 @@
 								</goals>
 								<configuration>
 									<classifier>exec</classifier>
+									<mainClass>customer.batchimportcat.Application</mainClass>
 								</configuration>
 							</execution>
 						</executions>
