@@ -18,7 +18,7 @@ modules:
       SPRING_PROFILES_ACTIVE: cloud
       BATCHIMPORT_TASK_LAUNCHER_TYPE: cloudfoundry
       BATCHIMPORT_TASK_HOST_APP: batchimportcat-batch-task
-      BATCHIMPORT_TASK_CLOUDFOUNDRY_COMMAND_TEMPLATE: java -jar app.jar --fileUUID={fileUUID} --executionUUID={executionUUID}
+      BATCHIMPORT_TASK_CLOUDFOUNDRY_COMMAND_TEMPLATE: META-INF/.sap_java_buildpack/java_main/start.sh org.springframework.boot.loader.launch.JarLauncher --fileUUID={fileUUID} --executionUUID={executionUUID}
       JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
       JBP_CONFIG_SAP_MACHINE_JRE: "{ version: 21.+ }"
     build-parameters:
