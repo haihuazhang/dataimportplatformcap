@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TaskLaunchRequestFactory {
+    private static final String CLOUD_FOUNDRY_FILE_UUID_ENV = "BATCHIMPORT_FILE_UUID";
+    private static final String CLOUD_FOUNDRY_EXECUTION_UUID_ENV = "BATCHIMPORT_EXECUTION_UUID";
+
     private final TaskLaunchProperties properties;
 
     public TaskLaunchRequestFactory(TaskLaunchProperties properties) {
@@ -57,7 +60,7 @@ public class TaskLaunchRequestFactory {
     private String buildCommand(String executionUUID, String fileUUID) {
         String launcherType = launcherType();
         if ("cloudfoundry".equals(launcherType)) {
-            return interpolate(properties.getCloudfoundry().getCommandTemplate(), executionUUID, fileUUID);
+            return buildCloudFoundryCommandWithAdditionalEnv(executionUUID, fileUUID);
         }
 
         String localTemplate = properties.getLocal().getCommandTemplate();
@@ -79,6 +82,13 @@ public class TaskLaunchRequestFactory {
         return "mvn -q -f " + quote(pomFile.toString())
                 + " -pl batch-task -am -DskipTests spring-boot:run"
                 + " -Dspring-boot.run.arguments='--fileUUID=" + fileUUID + " --executionUUID=" + executionUUID + "'";
+    }
+
+    private String buildCloudFoundryCommandWithAdditionalEnv(String executionUUID, String fileUUID) {
+        String command = interpolate(properties.getCloudfoundry().getCommandTemplate(), executionUUID, fileUUID);
+        return CLOUD_FOUNDRY_FILE_UUID_ENV + "=" + quote(fileUUID)
+                + " " + CLOUD_FOUNDRY_EXECUTION_UUID_ENV + "=" + quote(executionUUID)
+                + " " + command;
     }
 
     private Path resolveRepositoryRoot() {
