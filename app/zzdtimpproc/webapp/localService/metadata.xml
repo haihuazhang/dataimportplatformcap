@@ -1,0 +1,2504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+    <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="DataImportService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="BatchImportConfig" EntityType="DataImportService.BatchImportConfig">
+          <NavigationPropertyBinding Path="to_Structures" Target="BatchImportStructure"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="BatchImportConfig"/>
+        </EntitySet>
+        <EntitySet Name="BatchImportStructure" EntityType="DataImportService.BatchImportStructure">
+          <NavigationPropertyBinding Path="to_Config" Target="BatchImportConfig"/>
+          <NavigationPropertyBinding Path="to_Fields" Target="BatchImportField"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="BatchImportStructure"/>
+        </EntitySet>
+        <EntitySet Name="BatchImportField" EntityType="DataImportService.BatchImportField">
+          <NavigationPropertyBinding Path="to_Config" Target="BatchImportConfig"/>
+          <NavigationPropertyBinding Path="to_Structure" Target="BatchImportStructure"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="BatchImportField"/>
+        </EntitySet>
+        <EntitySet Name="BatchImportFile" EntityType="DataImportService.BatchImportFile">
+          <NavigationPropertyBinding Path="to_Config" Target="BatchImportConfig"/>
+          <NavigationPropertyBinding Path="to_Data" Target="BatchImportData"/>
+          <NavigationPropertyBinding Path="to_Messages" Target="BatchImportMessage"/>
+          <NavigationPropertyBinding Path="to_Executions" Target="BatchImportExecution"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="BatchImportFile"/>
+        </EntitySet>
+        <EntitySet Name="ProcessorArtifact" EntityType="DataImportService.ProcessorArtifact">
+          <NavigationPropertyBinding Path="SiblingEntity" Target="ProcessorArtifact"/>
+        </EntitySet>
+        <EntitySet Name="BatchImportExecution" EntityType="DataImportService.BatchImportExecution">
+          <NavigationPropertyBinding Path="to_File" Target="BatchImportFile"/>
+          <NavigationPropertyBinding Path="to_Config" Target="BatchImportConfig"/>
+          <NavigationPropertyBinding Path="to_ProcessorArtifact" Target="ProcessorArtifact"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="BatchImportExecution"/>
+        </EntitySet>
+        <EntitySet Name="BatchImportData" EntityType="DataImportService.BatchImportData">
+          <NavigationPropertyBinding Path="to_File" Target="BatchImportFile"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="BatchImportData"/>
+        </EntitySet>
+        <EntitySet Name="BatchImportMessage" EntityType="DataImportService.BatchImportMessage">
+          <NavigationPropertyBinding Path="to_File" Target="BatchImportFile"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="BatchImportMessage"/>
+        </EntitySet>
+        <EntitySet Name="JobInstance" EntityType="DataImportService.JobInstance">
+          <NavigationPropertyBinding Path="to_Executions" Target="JobExecution"/>
+        </EntitySet>
+        <EntitySet Name="JobExecution" EntityType="DataImportService.JobExecution">
+          <NavigationPropertyBinding Path="to_Instance" Target="JobInstance"/>
+          <NavigationPropertyBinding Path="to_Context" Target="JobExecutionContext"/>
+          <NavigationPropertyBinding Path="to_Params" Target="JobExecutionParam"/>
+          <NavigationPropertyBinding Path="to_StepExecutions" Target="StepExecution"/>
+        </EntitySet>
+        <EntitySet Name="JobExecutionContext" EntityType="DataImportService.JobExecutionContext"/>
+        <EntitySet Name="JobExecutionParam" EntityType="DataImportService.JobExecutionParam"/>
+        <EntitySet Name="StepExecution" EntityType="DataImportService.StepExecution">
+          <NavigationPropertyBinding Path="to_JobExecution" Target="JobExecution"/>
+          <NavigationPropertyBinding Path="to_Context" Target="StepExecutionContext"/>
+        </EntitySet>
+        <EntitySet Name="StepExecutionContext" EntityType="DataImportService.StepExecutionContext"/>
+        <EntitySet Name="ImportStructure" EntityType="DataImportService.ImportStructure"/>
+        <EntitySet Name="ImplementedByClass" EntityType="DataImportService.ImplementedByClass"/>
+        <EntitySet Name="ProcessKeyValueHelp" EntityType="DataImportService.ProcessKeyValueHelp"/>
+        <EntitySet Name="ImportFieldType" EntityType="DataImportService.ImportFieldType"/>
+      </EntityContainer>
+      <EntityType Name="BatchImportConfig">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="Object" Type="Edm.String" MaxLength="50"/>
+        <Property Name="ObjectName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="ProcessKey" Type="Edm.String" MaxLength="100"/>
+        <Property Name="ImplementedByClass" Type="Edm.String" MaxLength="255"/>
+        <Property Name="MimeType" Type="Edm.String"/>
+        <Property Name="FileName" Type="Edm.String" MaxLength="255"/>
+        <Property Name="Template" Type="Edm.Stream"/>
+        <Property Name="SheetName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="StructName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="StartLine" Type="Edm.Int64"/>
+        <Property Name="StartColumn" Type="Edm.String" MaxLength="5"/>
+        <NavigationProperty Name="to_Structures" Type="Collection(DataImportService.BatchImportStructure)">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.BatchImportConfig"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="BatchImportStructure">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="ConfigUUID" Type="Edm.Guid"/>
+        <Property Name="RootNode" Type="Edm.Boolean" DefaultValue="false"/>
+        <Property Name="SheetName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="SheetNameUp" Type="Edm.String" MaxLength="100"/>
+        <Property Name="StartLine" Type="Edm.Int64" DefaultValue="1"/>
+        <Property Name="StartColumn" Type="Edm.String" MaxLength="5" DefaultValue="A"/>
+        <Property Name="HasFieldnameLine" Type="Edm.Boolean" DefaultValue="true"/>
+        <Property Name="HasDescLine" Type="Edm.Boolean" DefaultValue="true"/>
+        <NavigationProperty Name="to_Config" Type="DataImportService.BatchImportConfig">
+          <ReferentialConstraint Property="ConfigUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Fields" Type="Collection(DataImportService.BatchImportField)">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.BatchImportStructure"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="BatchImportField">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="ConfigUUID" Type="Edm.Guid"/>
+        <Property Name="StructureUUID" Type="Edm.Guid"/>
+        <Property Name="FieldName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="FieldDescription" Type="Edm.String" MaxLength="255"/>
+        <Property Name="IsKeyField" Type="Edm.Boolean" DefaultValue="false"/>
+        <Property Name="Sequence" Type="Edm.Int64"/>
+        <Property Name="IsForeignField" Type="Edm.Boolean" DefaultValue="false"/>
+        <Property Name="ForeignField" Type="Edm.String" MaxLength="100"/>
+        <Property Name="FieldLength" Type="Edm.Int64"/>
+        <Property Name="FieldType" Type="Edm.String" MaxLength="30"/>
+        <Property Name="FieldDecimal" Type="Edm.Int64"/>
+        <NavigationProperty Name="to_Config" Type="DataImportService.BatchImportConfig">
+          <ReferentialConstraint Property="ConfigUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Structure" Type="DataImportService.BatchImportStructure">
+          <ReferentialConstraint Property="StructureUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.BatchImportField"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="BatchImportFile">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="ConfigUUID" Type="Edm.Guid"/>
+        <Property Name="MimeType" Type="Edm.String"/>
+        <Property Name="FileName" Type="Edm.String" MaxLength="255"/>
+        <Property Name="Attachment" Type="Edm.Stream"/>
+        <Property Name="JobName" Type="Edm.String" MaxLength="150"/>
+        <Property Name="Status" Type="Edm.String" MaxLength="1"/>
+        <Property Name="StatusText" Type="Edm.String" MaxLength="40"/>
+        <Property Name="StatusCriticality" Type="Edm.Int32"/>
+        <NavigationProperty Name="to_Config" Type="DataImportService.BatchImportConfig">
+          <ReferentialConstraint Property="ConfigUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Data" Type="Collection(DataImportService.BatchImportData)">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Messages" Type="Collection(DataImportService.BatchImportMessage)">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Executions" Type="Collection(DataImportService.BatchImportExecution)">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.BatchImportFile"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="ProcessorArtifact">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="ProcessKey" Type="Edm.String" MaxLength="100"/>
+        <Property Name="Version" Type="Edm.String" MaxLength="40"/>
+        <Property Name="Description" Type="Edm.String" MaxLength="255"/>
+        <Property Name="ArtifactStorageType" Type="Edm.String" MaxLength="30" DefaultValue="DB_MEDIA"/>
+        <Property Name="MediaMimeType" Type="Edm.String"/>
+        <Property Name="MediaFileName" Type="Edm.String" MaxLength="255"/>
+        <Property Name="MediaContent" Type="Edm.Stream"/>
+        <Property Name="MediaSize" Type="Edm.Int64"/>
+        <Property Name="MediaUrl" Type="Edm.String" MaxLength="500"/>
+        <Property Name="ArtifactChecksum" Type="Edm.String" MaxLength="128"/>
+        <Property Name="EntryPointClass" Type="Edm.String" MaxLength="255"/>
+        <Property Name="Enabled" Type="Edm.Boolean" DefaultValue="true"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.ProcessorArtifact"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="BatchImportExecution">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="FileUUID" Type="Edm.Guid"/>
+        <Property Name="ConfigUUID" Type="Edm.Guid"/>
+        <Property Name="ProcessKey" Type="Edm.String" MaxLength="100"/>
+        <Property Name="ProcessorArtifactID" Type="Edm.Guid"/>
+        <Property Name="ProcessorVersion" Type="Edm.String" MaxLength="40"/>
+        <Property Name="ArtifactChecksum" Type="Edm.String" MaxLength="128"/>
+        <Property Name="TaskHostApp" Type="Edm.String" MaxLength="100"/>
+        <Property Name="LauncherType" Type="Edm.String" MaxLength="30"/>
+        <Property Name="TaskId" Type="Edm.String" MaxLength="100"/>
+        <Property Name="TaskName" Type="Edm.String" MaxLength="255"/>
+        <Property Name="TaskCommand" Type="Edm.String"/>
+        <Property Name="TaskState" Type="Edm.String" MaxLength="30"/>
+        <Property Name="FailureReason" Type="Edm.String"/>
+        <Property Name="JobInstanceId" Type="Edm.String" MaxLength="100"/>
+        <Property Name="StartedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="FinishedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <NavigationProperty Name="to_File" Type="DataImportService.BatchImportFile">
+          <ReferentialConstraint Property="FileUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Config" Type="DataImportService.BatchImportConfig">
+          <ReferentialConstraint Property="ConfigUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_ProcessorArtifact" Type="DataImportService.ProcessorArtifact">
+          <ReferentialConstraint Property="ProcessorArtifactID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.BatchImportExecution"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="BatchImportData">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="FileUUID" Type="Edm.Guid"/>
+        <Property Name="StructureName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="Line" Type="Edm.Int64"/>
+        <Property Name="DataJson" Type="Edm.String"/>
+        <NavigationProperty Name="to_File" Type="DataImportService.BatchImportFile">
+          <ReferentialConstraint Property="FileUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.BatchImportData"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="BatchImportMessage">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+        <Property Name="FileUUID" Type="Edm.Guid"/>
+        <Property Name="Line" Type="Edm.Int64"/>
+        <Property Name="Type" Type="Edm.String" MaxLength="1"/>
+        <Property Name="Code" Type="Edm.String" MaxLength="100"/>
+        <Property Name="Message" Type="Edm.String"/>
+        <Property Name="Details" Type="Edm.String"/>
+        <NavigationProperty Name="to_File" Type="DataImportService.BatchImportFile">
+          <ReferentialConstraint Property="FileUUID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="CodeCriticality" Type="Edm.Int32"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="DataImportService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="DataImportService.BatchImportMessage"/>
+        <Property Name="DraftMessages" Type="Collection(DataImportService.DRAFT_DraftAdministrativeData_DraftMessage)" Nullable="true"/>
+      </EntityType>
+      <EntityType Name="JobInstance">
+        <Key>
+          <PropertyRef Name="JOB_INSTANCE_ID"/>
+        </Key>
+        <Property Name="JOB_INSTANCE_ID" Type="Edm.Int64" Nullable="false"/>
+        <Property Name="VERSION" Type="Edm.Int64"/>
+        <Property Name="JOB_NAME" Type="Edm.String" MaxLength="100"/>
+        <Property Name="JOB_KEY" Type="Edm.String" MaxLength="36"/>
+        <NavigationProperty Name="to_Executions" Type="Collection(DataImportService.JobExecution)"/>
+      </EntityType>
+      <EntityType Name="JobExecution">
+        <Key>
+          <PropertyRef Name="JOB_EXECUTION_ID"/>
+        </Key>
+        <Property Name="JOB_EXECUTION_ID" Type="Edm.Int64" Nullable="false"/>
+        <Property Name="VERSION" Type="Edm.Int64"/>
+        <Property Name="JOB_INSTANCE_ID" Type="Edm.Int64"/>
+        <Property Name="CREATE_TIME" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="START_TIME" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="END_TIME" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="STATUS" Type="Edm.String" MaxLength="10"/>
+        <Property Name="EXIT_CODE" Type="Edm.String" MaxLength="2500"/>
+        <Property Name="EXIT_MESSAGE" Type="Edm.String" MaxLength="2500"/>
+        <Property Name="LAST_UPDATED" Type="Edm.DateTimeOffset" Precision="7"/>
+        <NavigationProperty Name="to_Instance" Type="DataImportService.JobInstance">
+          <ReferentialConstraint Property="JOB_INSTANCE_ID" ReferencedProperty="JOB_INSTANCE_ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Context" Type="DataImportService.JobExecutionContext">
+          <ReferentialConstraint Property="JOB_EXECUTION_ID" ReferencedProperty="JOB_EXECUTION_ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Params" Type="Collection(DataImportService.JobExecutionParam)"/>
+        <NavigationProperty Name="to_StepExecutions" Type="Collection(DataImportService.StepExecution)"/>
+      </EntityType>
+      <EntityType Name="JobExecutionContext">
+        <Key>
+          <PropertyRef Name="JOB_EXECUTION_ID"/>
+        </Key>
+        <Property Name="JOB_EXECUTION_ID" Type="Edm.Int64" Nullable="false"/>
+        <Property Name="SHORT_CONTEXT" Type="Edm.String" MaxLength="2500"/>
+        <Property Name="SERIALIZED_CONTEXT" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="JobExecutionParam">
+        <Key>
+          <PropertyRef Name="JOB_EXECUTION_ID"/>
+          <PropertyRef Name="PARAMETER_NAME"/>
+          <PropertyRef Name="PARAMETER_TYPE"/>
+        </Key>
+        <Property Name="JOB_EXECUTION_ID" Type="Edm.Int64" Nullable="false"/>
+        <Property Name="PARAMETER_NAME" Type="Edm.String" MaxLength="100" Nullable="false"/>
+        <Property Name="PARAMETER_TYPE" Type="Edm.String" MaxLength="100" Nullable="false"/>
+        <Property Name="PARAMETER_VALUE" Type="Edm.String" MaxLength="2500"/>
+        <Property Name="IDENTIFYING" Type="Edm.String" MaxLength="1"/>
+      </EntityType>
+      <EntityType Name="StepExecution">
+        <Key>
+          <PropertyRef Name="STEP_EXECUTION_ID"/>
+        </Key>
+        <Property Name="STEP_EXECUTION_ID" Type="Edm.Int64" Nullable="false"/>
+        <Property Name="VERSION" Type="Edm.Int64"/>
+        <Property Name="STEP_NAME" Type="Edm.String" MaxLength="100"/>
+        <Property Name="JOB_EXECUTION_ID" Type="Edm.Int64"/>
+        <Property Name="CREATE_TIME" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="START_TIME" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="END_TIME" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="STATUS" Type="Edm.String" MaxLength="10"/>
+        <Property Name="COMMIT_COUNT" Type="Edm.Int64"/>
+        <Property Name="READ_COUNT" Type="Edm.Int64"/>
+        <Property Name="FILTER_COUNT" Type="Edm.Int64"/>
+        <Property Name="WRITE_COUNT" Type="Edm.Int64"/>
+        <Property Name="READ_SKIP_COUNT" Type="Edm.Int64"/>
+        <Property Name="WRITE_SKIP_COUNT" Type="Edm.Int64"/>
+        <Property Name="PROCESS_SKIP_COUNT" Type="Edm.Int64"/>
+        <Property Name="ROLLBACK_COUNT" Type="Edm.Int64"/>
+        <Property Name="EXIT_CODE" Type="Edm.String" MaxLength="20"/>
+        <Property Name="EXIT_MESSAGE" Type="Edm.String" MaxLength="2500"/>
+        <Property Name="LAST_UPDATED" Type="Edm.DateTimeOffset" Precision="7"/>
+        <NavigationProperty Name="to_JobExecution" Type="DataImportService.JobExecution">
+          <ReferentialConstraint Property="JOB_EXECUTION_ID" ReferencedProperty="JOB_EXECUTION_ID"/>
+        </NavigationProperty>
+        <NavigationProperty Name="to_Context" Type="DataImportService.StepExecutionContext">
+          <ReferentialConstraint Property="STEP_EXECUTION_ID" ReferencedProperty="STEP_EXECUTION_ID"/>
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="StepExecutionContext">
+        <Key>
+          <PropertyRef Name="STEP_EXECUTION_ID"/>
+        </Key>
+        <Property Name="STEP_EXECUTION_ID" Type="Edm.Int64" Nullable="false"/>
+        <Property Name="SHORT_CONTEXT" Type="Edm.String" MaxLength="2500"/>
+        <Property Name="SERIALIZED_CONTEXT" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="ImportStructure">
+        <Key>
+          <PropertyRef Name="Name"/>
+        </Key>
+        <Property Name="Name" Type="Edm.String" MaxLength="100" Nullable="false"/>
+        <Property Name="Description" Type="Edm.String" MaxLength="255"/>
+      </EntityType>
+      <EntityType Name="ImplementedByClass">
+        <Key>
+          <PropertyRef Name="Name"/>
+        </Key>
+        <Property Name="Name" Type="Edm.String" Nullable="false"/>
+        <Property Name="Description" Type="Edm.String"/>
+      </EntityType>
+      <EntityType Name="ProcessKeyValueHelp">
+        <Key>
+          <PropertyRef Name="ProcessKey"/>
+        </Key>
+        <Property Name="ProcessKey" Type="Edm.String" MaxLength="100" Nullable="false"/>
+        <Property Name="Description" Type="Edm.String" MaxLength="255"/>
+      </EntityType>
+      <EntityType Name="ImportFieldType">
+        <Key>
+          <PropertyRef Name="Code"/>
+        </Key>
+        <Property Name="Code" Type="Edm.String" MaxLength="30" Nullable="false"/>
+        <Property Name="Description" Type="Edm.String" MaxLength="255"/>
+      </EntityType>
+      <EntityType Name="DraftAdministrativeData">
+        <Key>
+          <PropertyRef Name="DraftUUID"/>
+        </Key>
+        <Property Name="DraftUUID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="CreationDateTime" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="CreatedByUser" Type="Edm.String" MaxLength="256"/>
+        <Property Name="DraftIsCreatedByMe" Type="Edm.Boolean"/>
+        <Property Name="LastChangeDateTime" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="LastChangedByUser" Type="Edm.String" MaxLength="256"/>
+        <Property Name="InProcessByUser" Type="Edm.String" MaxLength="256"/>
+        <Property Name="DraftIsProcessedByMe" Type="Edm.Boolean"/>
+      </EntityType>
+      <ComplexType Name="DRAFT_DraftAdministrativeData_DraftMessage">
+        <Property Name="code" Type="Edm.String"/>
+        <Property Name="message" Type="Edm.String"/>
+        <Property Name="target" Type="Edm.String"/>
+        <Property Name="additionalTargets" Type="Collection(Edm.String)" Nullable="true"/>
+        <Property Name="transition" Type="Edm.Boolean"/>
+        <Property Name="numericSeverity" Type="Edm.Byte"/>
+        <Property Name="longtextUrl" Type="Edm.String"/>
+      </ComplexType>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportConfig"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.BatchImportConfig"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportStructure"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.BatchImportStructure"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportField"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.BatchImportField"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportFile"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.BatchImportFile"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.ProcessorArtifact"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.ProcessorArtifact"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportExecution"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.BatchImportExecution"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportData"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.BatchImportData"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportMessage"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="DataImportService.BatchImportMessage"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportConfig"/>
+        <ReturnType Type="DataImportService.BatchImportConfig"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportFile"/>
+        <ReturnType Type="DataImportService.BatchImportFile"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.ProcessorArtifact"/>
+        <ReturnType Type="DataImportService.ProcessorArtifact"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportConfig"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="DataImportService.BatchImportConfig"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.BatchImportFile"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="DataImportService.BatchImportFile"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="DataImportService.ProcessorArtifact"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="DataImportService.ProcessorArtifact"/>
+      </Action>
+      <Annotations Target="DataImportService.EntityContainer">
+        <Annotation Term="Common.AddressViaNavigationPath" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig">
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="idIdentification"/>
+              <PropertyValue Property="Label" String="Basic"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.Identification"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Runtime"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Runtime_FG"/>
+              <PropertyValue Property="Label" String="Runtime"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Legacy"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Legacy_FG"/>
+              <PropertyValue Property="Label" String="Legacy Bootstrap"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Template"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Template_FG"/>
+              <PropertyValue Property="Label" String="Template Area"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Structures"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Structures/@UI.LineItem"/>
+              <PropertyValue Property="Label" String="Structures"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Object"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ObjectName"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Runtime_FG">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="ProcessKey"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Legacy_FG">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="StructName"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="SheetName"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="StartLine"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="StartColumn"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Template_FG">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Template"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="FileName"/>
+                  <Annotation Term="UI.Hidden" Bool="true"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Object"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ObjectName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ProcessKey"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Template"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SheetName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="StructName"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/BatchImportConfig">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="DataImportService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="DataImportService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/Object">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Object}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/ObjectName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ObjectName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/ProcessKey">
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="CollectionPath" String="ProcessKeyValueHelp"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="ProcessKey"/>
+                  <PropertyValue Property="ValueListProperty" String="ProcessKey"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="Description"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ProcessKey}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/ImplementedByClass">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ImplementedByClass}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/MimeType">
+        <Annotation Term="Core.IsMediaType" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/FileName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FileName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/Template">
+        <Annotation Term="Core.MediaType" Path="MimeType"/>
+        <Annotation Term="Core.ContentDisposition">
+          <Record Type="Core.ContentDispositionType">
+            <PropertyValue Property="Filename" Path="FileName"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/SheetName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_SheetName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/StructName">
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="CollectionPath" String="ImportStructure"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="StructName"/>
+                  <PropertyValue Property="ValueListProperty" String="Name"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="Description"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StructName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/StartLine">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StartLine}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/StartColumn">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StartColumn}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportConfig/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure">
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="General"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.Identification"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Parsing"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Parsing_FG"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Fields"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Fields/@UI.LineItem"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="RootNode"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SheetName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SheetNameUp"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Parsing_FG">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="StartLine"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="StartColumn"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="HasFieldnameLine"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="HasDescLine"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="RootNode"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SheetName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SheetNameUp"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="StartLine"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="StartColumn"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="HasFieldnameLine"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="HasDescLine"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/BatchImportStructure">
+        <Annotation Term="Common.DraftNode">
+          <Record Type="Common.DraftNodeType">
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/ConfigUUID">
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="CollectionPath" String="BatchImportConfig"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="ConfigUUID"/>
+                  <PropertyValue Property="ValueListProperty" String="ID"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="ObjectName"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ConfigUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/RootNode">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_RootNode}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/SheetName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_SheetName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/SheetNameUp">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_SheetNameUp}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/StartLine">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StartLine}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/StartColumn">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StartColumn}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/HasFieldnameLine">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_HasFieldnameLine}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/HasDescLine">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_HasDescLine}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportStructure/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField">
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FieldName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FieldDescription"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Sequence"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FieldName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FieldDescription"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FieldType"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FieldLength"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FieldDecimal"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="IsKeyField"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="IsForeignField"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ForeignField"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/BatchImportField">
+        <Annotation Term="Common.DraftNode">
+          <Record Type="Common.DraftNodeType">
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/ConfigUUID">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ConfigUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/StructureUUID">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StructureUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/FieldName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FieldName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/FieldDescription">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FieldDescription}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/IsKeyField">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_IsKeyField}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/Sequence">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Sequence}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/IsForeignField">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_IsForeignField}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/ForeignField">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ForeignField}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/FieldLength">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FieldLength}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/FieldType">
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="CollectionPath" String="ImportFieldType"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="FieldType"/>
+                  <PropertyValue Property="ValueListProperty" String="Code"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="Description"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FieldType}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/FieldDecimal">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FieldDecimal}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportField/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile">
+        <Annotation Term="UI.FieldGroup" Qualifier="General_FG">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Label" String="General"/>
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="ConfigUUID"/>
+                  <PropertyValue Property="Label" String="Configuration"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Attachment"/>
+                  <PropertyValue Property="Label" String="Import File here"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="FileName"/>
+                  <Annotation Term="UI.Hidden" Bool="true"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="StatusText"/>
+                  <PropertyValue Property="Criticality" Path="StatusCriticality"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="General"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#General_FG"/>
+              <PropertyValue Property="Label" String="General"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Data"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Data/@UI.LineItem"/>
+              <PropertyValue Property="Label" String="Data"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Executions"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Executions/@UI.LineItem"/>
+              <PropertyValue Property="Label" String="Executions"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Messages"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Messages/@UI.LineItem"/>
+              <PropertyValue Property="Label" String="Messages"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="to_Config/ObjectName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FileName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="StatusText"/>
+              <PropertyValue Property="Criticality" Path="StatusCriticality"/>
+            </Record>
+            <Record Type="UI.DataFieldWithIntentBasedNavigation">
+              <PropertyValue Property="Value" Path="JobName"/>
+              <PropertyValue Property="SemanticObject" String="zzdtimplog"/>
+              <PropertyValue Property="Action" String="display"/>
+              <PropertyValue Property="Mapping">
+                <Collection>
+                  <Record Type="Common.SemanticObjectMappingType">
+                    <PropertyValue Property="LocalProperty" PropertyPath="JobName"/>
+                    <PropertyValue Property="SemanticObjectProperty" String="JOB_INSTANCE_ID"/>
+                  </Record>
+                </Collection>
+              </PropertyValue>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/BatchImportFile">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="DataImportService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="DataImportService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/ConfigUUID">
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="CollectionPath" String="BatchImportConfig"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="ConfigUUID"/>
+                  <PropertyValue Property="ValueListProperty" String="ID"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="ObjectName"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="Object"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Text" Path="to_Config/ObjectName"/>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ConfigUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/MimeType">
+        <Annotation Term="Core.IsMediaType" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/FileName">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FileName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/Attachment">
+        <Annotation Term="Core.MediaType" Path="MimeType"/>
+        <Annotation Term="Core.ContentDisposition">
+          <Record Type="Core.ContentDispositionType">
+            <PropertyValue Property="Filename" Path="FileName"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/JobName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_JobName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/Status">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Status}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/StatusText">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StatusText}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/StatusCriticality">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StatusCriticality}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportFile/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact">
+        <Annotation Term="UI.HeaderInfo">
+          <Record Type="UI.HeaderInfoType">
+            <PropertyValue Property="TypeName" String="Processor Artifact"/>
+            <PropertyValue Property="TypeNamePlural" String="Processor Artifacts"/>
+            <PropertyValue Property="Title">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="ProcessKey"/>
+              </Record>
+            </PropertyValue>
+            <PropertyValue Property="Description">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="Version"/>
+              </Record>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="idIdentification"/>
+              <PropertyValue Property="Label" String="Basic"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.Identification"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Storage"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Storage"/>
+              <PropertyValue Property="Label" String="Storage"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Media"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Media"/>
+              <PropertyValue Property="Label" String="Media"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ProcessKey"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Version"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Description"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EntryPointClass"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Enabled"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Storage">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="ArtifactStorageType"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Enabled"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Media">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="MediaFileName"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="MediaContent"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="MediaSize"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="ArtifactChecksum"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ProcessKey"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Version"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Description"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EntryPointClass"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ArtifactStorageType"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="MediaFileName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="MediaSize"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Enabled"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>ProcessKey</PropertyPath>
+            <PropertyPath>Version</PropertyPath>
+            <PropertyPath>Enabled</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/ProcessorArtifact">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="DataImportService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="DataImportService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/ID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/ProcessKey">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ProcessKey}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/Version">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ProcessorVersion}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/Description">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Description}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/ArtifactStorageType">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ArtifactStorageType}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/MediaMimeType">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.IsMediaType" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/MediaFileName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_MediaFileName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/MediaContent">
+        <Annotation Term="Core.MediaType" Path="MediaMimeType"/>
+        <Annotation Term="Core.ContentDisposition">
+          <Record Type="Core.ContentDispositionType">
+            <PropertyValue Property="Filename" Path="MediaFileName"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/MediaSize">
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_MediaSize}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/MediaUrl">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_MediaUrl}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/ArtifactChecksum">
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ArtifactChecksum}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/EntryPointClass">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_EntryPointClass}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/Enabled">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Enabled}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.ProcessorArtifact/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution">
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FileUUID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ProcessKey"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="ProcessorVersion"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="LauncherType"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="TaskState"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="TaskName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="TaskCommand"/>
+            </Record>
+            <Record Type="UI.DataFieldWithIntentBasedNavigation">
+              <PropertyValue Property="Value" Path="JobInstanceId"/>
+              <PropertyValue Property="SemanticObject" String="zzdtimplog"/>
+              <PropertyValue Property="Action" String="display"/>
+              <PropertyValue Property="Mapping">
+                <Collection>
+                  <Record Type="Common.SemanticObjectMappingType">
+                    <PropertyValue Property="LocalProperty" PropertyPath="JobInstanceId"/>
+                    <PropertyValue Property="SemanticObjectProperty" String="JOB_INSTANCE_ID"/>
+                  </Record>
+                </Collection>
+              </PropertyValue>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="StartedAt"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FinishedAt"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>ProcessKey</PropertyPath>
+            <PropertyPath>TaskState</PropertyPath>
+            <PropertyPath>ProcessorVersion</PropertyPath>
+            <PropertyPath>LauncherType</PropertyPath>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/BatchImportExecution">
+        <Annotation Term="Common.DraftNode">
+          <Record Type="Common.DraftNodeType">
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/FileUUID">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FileUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/ConfigUUID">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ConfigUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/ProcessKey">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ProcessKey}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/ProcessorArtifactID">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ProcessorArtifactID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/ProcessorVersion">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ProcessorVersion}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/ArtifactChecksum">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_ArtifactChecksum}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/TaskHostApp">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_TaskHostApp}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/LauncherType">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_LauncherType}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/TaskId">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_TaskId}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/TaskName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_TaskName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/TaskCommand">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_TaskCommand}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/TaskState">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_TaskState}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/FailureReason">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FailureReason}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/JobInstanceId">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_JobInstanceId}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/StartedAt">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StartedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/FinishedAt">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FinishedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportExecution/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData">
+        <Annotation Term="UI.CreateHidden" Bool="true"/>
+        <Annotation Term="UI.UpdateHidden" Bool="true"/>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="Line"/>
+                  <PropertyValue Property="Descending" Bool="false"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Line"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="StructureName"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="DataJson"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Line"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="StructureName"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/BatchImportData">
+        <Annotation Term="UI.CreateHidden" Bool="true"/>
+        <Annotation Term="UI.UpdateHidden" Bool="true"/>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+        <Annotation Term="UI.PresentationVariant">
+          <Record Type="UI.PresentationVariantType">
+            <PropertyValue Property="SortOrder">
+              <Collection>
+                <Record Type="Common.SortOrderType">
+                  <PropertyValue Property="Property" PropertyPath="Line"/>
+                  <PropertyValue Property="Descending" Bool="false"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.DraftNode">
+          <Record Type="Common.DraftNodeType">
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/FileUUID">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FileUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/StructureName">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_StructName}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/Line">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Line}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/DataJson">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_DataJson}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportData/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage">
+        <Annotation Term="UI.CreateHidden" Bool="true"/>
+        <Annotation Term="UI.UpdateHidden" Bool="true"/>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Line"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Code"/>
+              <PropertyValue Property="Criticality" Path="CodeCriticality"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Message"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Details"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Line"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Code"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Message"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Details"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.Messages" Path="DraftMessages"/>
+      </Annotations>
+      <Annotations Target="DataImportService.EntityContainer/BatchImportMessage">
+        <Annotation Term="UI.CreateHidden" Bool="true"/>
+        <Annotation Term="UI.UpdateHidden" Bool="true"/>
+        <Annotation Term="UI.DeleteHidden" Bool="true"/>
+        <Annotation Term="Common.DraftNode">
+          <Record Type="Common.DraftNodeType">
+            <PropertyValue Property="PreparationAction" String="DataImportService.draftPrepare"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.SideEffects" Qualifier="alwaysFetchMessages">
+          <Record Type="Common.SideEffectsType">
+            <PropertyValue Property="SourceEntities">
+              <Collection>
+                <NavigationPropertyPath></NavigationPropertyPath>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="TargetProperties">
+              <Collection>
+                <String>DraftMessages</String>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/ID">
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/createdAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/createdBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Immutable" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/modifiedAt">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/modifiedBy">
+        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+        <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+        <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/FileUUID">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_FileUUID}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/Line">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Line}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/Type">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>zzdt_MessageType}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/Code">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_MessageCode}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/Message">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_Message}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/Details">
+        <Annotation Term="Common.Label" String="{i18n>zzdt_MessageDetails}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/CodeCriticality">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.BatchImportMessage/DraftMessages">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.JobInstance">
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="idIdentification"/>
+              <PropertyValue Property="Label" String="Basic"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.Identification"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="JobExecution"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Executions/@UI.LineItem"/>
+              <PropertyValue Property="Label" String="Job Executions"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JOB_INSTANCE_ID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JOB_NAME"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JOB_INSTANCE_ID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JOB_NAME"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.JobExecution">
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="idIdentification"/>
+              <PropertyValue Property="Label" String="Basic"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.Identification"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Function"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Execution"/>
+              <PropertyValue Property="Label" String="Execution"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Status"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Status"/>
+              <PropertyValue Property="Label" String="Status"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Context"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Context/@UI.Identification"/>
+              <PropertyValue Property="Label" String="Context"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Parameters"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Params/@UI.LineItem"/>
+              <PropertyValue Property="Label" String="Parameters"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="JobExecution"/>
+              <PropertyValue Property="Target" AnnotationPath="to_StepExecutions/@UI.LineItem"/>
+              <PropertyValue Property="Label" String="Steps"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JOB_EXECUTION_ID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="CREATE_TIME"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Execution">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="START_TIME"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="END_TIME"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Status">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="STATUS"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="EXIT_CODE"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="EXIT_MESSAGE"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JOB_EXECUTION_ID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="CREATE_TIME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="START_TIME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="END_TIME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="STATUS"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EXIT_CODE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EXIT_MESSAGE"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.JobExecutionContext">
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SHORT_CONTEXT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SERIALIZED_CONTEXT"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SHORT_CONTEXT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SERIALIZED_CONTEXT"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.JobExecutionParam">
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="PARAMETER_NAME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="PARAMETER_TYPE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="PARAMETER_VALUE"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.StepExecution">
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="idIdentification"/>
+              <PropertyValue Property="Label" String="Basic"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.Identification"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Function"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Execution"/>
+              <PropertyValue Property="Label" String="Execution"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Status"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Status"/>
+              <PropertyValue Property="Label" String="Status"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="DataCount"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#DataCount"/>
+              <PropertyValue Property="Label" String="Data Count"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="Parameters"/>
+              <PropertyValue Property="Target" AnnotationPath="to_Context/@UI.Identification"/>
+              <PropertyValue Property="Label" String="Parameters"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="STEP_EXECUTION_ID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="STEP_NAME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="CREATE_TIME"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Execution">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="START_TIME"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="END_TIME"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="Status">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="STATUS"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="EXIT_CODE"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="EXIT_MESSAGE"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="DataCount">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="COMMIT_COUNT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="READ_COUNT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="FILTER_COUNT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="WRITE_COUNT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="READ_SKIP_COUNT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="WRITE_SKIP_COUNT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="PROCESS_SKIP_COUNT"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="ROLLBACK_COUNT"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="STEP_EXECUTION_ID"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="STEP_NAME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="CREATE_TIME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="START_TIME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="END_TIME"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="STATUS"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EXIT_CODE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EXIT_MESSAGE"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="READ_COUNT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="WRITE_COUNT"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.StepExecutionContext">
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SHORT_CONTEXT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SERIALIZED_CONTEXT"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SHORT_CONTEXT"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="SERIALIZED_CONTEXT"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData">
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftAdministrativeData}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/DraftUUID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftUUID}"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/CreationDateTime">
+        <Annotation Term="Common.Label" String="{i18n>Draft_CreationDateTime}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/CreatedByUser">
+        <Annotation Term="Common.Label" String="{i18n>Draft_CreatedByUser}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/DraftIsCreatedByMe">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftIsCreatedByMe}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/LastChangeDateTime">
+        <Annotation Term="Common.Label" String="{i18n>Draft_LastChangeDateTime}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/LastChangedByUser">
+        <Annotation Term="Common.Label" String="{i18n>Draft_LastChangedByUser}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/InProcessByUser">
+        <Annotation Term="Common.Label" String="{i18n>Draft_InProcessByUser}"/>
+      </Annotations>
+      <Annotations Target="DataImportService.DraftAdministrativeData/DraftIsProcessedByMe">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftIsProcessedByMe}"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

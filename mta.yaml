@@ -108,6 +108,17 @@ modules:
       build-result: dist
       supported-platforms: []
 
+  - name: zzdtimpproc
+    type: html5
+    path: app/zzdtimpproc
+    build-parameters:
+      builder: custom
+      commands:
+        - npm install
+        - npm run build
+      build-result: dist
+      supported-platforms: []
+
   - name: batchimportcat-app-deployer
     type: com.sap.application.content
     path: .
@@ -133,6 +144,10 @@ modules:
         - name: zzdtimplog
           artifacts:
             - zzdtimplog.zip
+          target-path: resources/
+        - name: zzdtimpproc
+          artifacts:
+            - zzdtimpproc.zip
           target-path: resources/
 
   - name: batchimportcat-destinations
