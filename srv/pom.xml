@@ -110,6 +110,16 @@
 			<groupId>com.sap.cds</groupId>
 			<artifactId>cds-starter-cloudfoundry</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.cloudfoundry</groupId>
+			<artifactId>cloudfoundry-client-reactor</artifactId>
+			<version>${cf.java.client.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.cloudfoundry</groupId>
+			<artifactId>cloudfoundry-operations</artifactId>
+			<version>${cf.java.client.version}</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>

@@ -1,0 +1,4 @@
+ID;Object;ObjectName;ProcessKey;ImplementedByClass;SheetName;StructName;StartLine;StartColumn
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;EX_HIS_TEST;Example Header Item Schedule Test Config;EXAMPLE_HEADER_ITEM_SCHEDULE;customer.batchimportcat.processor.example.headeritemschedule.ExampleHeaderItemScheduleBatchImportProcessor;Header;Header;1;A
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1002;EX_NOOP_TEST;Example NOOP Test Config;NOOP;customer.batchimportcat.processor.noop.NoopBatchImportProcessor;NoopRoot;NoopRoot;1;A
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1003;EX_TABLE01_TEST;Example Table01 Test Config;EXAMPLE_TABLE01;customer.batchimportcat.processor.example.table01.ExampleTable01BatchImportProcessor;ZZTable01;ZZTable01;1;A

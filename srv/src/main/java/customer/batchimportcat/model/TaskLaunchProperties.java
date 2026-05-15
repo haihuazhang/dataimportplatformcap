@@ -36,8 +36,14 @@ public class TaskLaunchProperties {
     @Getter
     @Setter
     public static class CloudFoundry {
+        private String apiHost = "api.cf.us10-001.hana.ondemand.com";
+        private String organization = "a83421e9trial";
+        private String space = "dev";
+        private String username;
+        private String password;
+        private boolean skipSslValidation;
+        @Deprecated
         private String cfBinary = "cf";
-        private String commandTemplate =
-                "java -jar app.jar --spring.profiles.active=cloud --fileUUID={fileUUID} --executionUUID={executionUUID}";
+        private String commandTemplate = "{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}";
     }
 }

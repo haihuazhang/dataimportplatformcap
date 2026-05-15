@@ -5,7 +5,8 @@
     <Dialog id="jsonViewDialog" title="Preview" contentWidth="150rem" contentHeight="100rem">
         <core:HTML
             id="jsonViewer"
-            content=''
+            content=""
+            sanitizeContent="true"
         />
         <endButton>
             <Button id="jsonViewDialogCloseButton" text="Close" press=".onJSONViewDialogClose"></Button>

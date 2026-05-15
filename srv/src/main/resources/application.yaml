@@ -5,21 +5,24 @@ spring:
   batch:
     job:
       enabled: false
-  quartz:
-    properties:
-      org:
-        quartz:
-          jobStore:
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 batchimport:
   task:
     launcher-type: local
     host-app: batchimportcat-batch-task
+    memory-mb: 1024
+    disk-mb: 1024
+    timeout: 1h
     local:
       shell: /bin/zsh
       batch-task-jar: batch-task/target/batchimportcat-batch-task-exec.jar
     cloudfoundry:
-      command-template: java -jar app.jar --spring.profiles.active=cloud --fileUUID={fileUUID} --executionUUID={executionUUID}
+      api-host: api.cf.us10-001.hana.ondemand.com
+      organization: a83421e9trial
+      space: dev
+      username: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_USERNAME:}
+      password: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_PASSWORD:}
+      skip-ssl-validation: false
+      command-template: "{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}"
 # ---
 # spring:
 # #   config.activate.on-profile: default
@@ -35,7 +38,7 @@ batchimport:
   #     maximum-pool-size: 10
 ---
 spring:
-  web.resources.static-locations: "file:./app"
+  web.resources.static-locations: "file:./app/,file:../app/"
   config:
     activate:
       on-profile: pg
@@ -62,6 +65,11 @@ spring:
     job-store-type: jdbc
     jdbc:
       initialize-schema: NEVER
+    properties:
+      org:
+        quartz:
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 cds:
   dataSource:
     auto-config.enabled: true
@@ -76,9 +84,38 @@ spring:
     job-store-type: jdbc
     jdbc:
       initialize-schema: NEVER
+    properties:
+      org:
+        quartz:
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 cds:
   dataSource:
     auto-config.enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: cloud
+  batch:
+    jdbc:
+      initialize-schema: NEVER
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: NEVER
+    properties:
+      org:
+        quartz:
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+cds:
+  dataSource:
+    auto-config.enabled: true
+batchimport:
+  task:
+    launcher-type: cloudfoundry
 
 
 # ---

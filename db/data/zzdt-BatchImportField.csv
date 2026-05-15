@@ -1,0 +1,19 @@
+ID;ConfigUUID;StructureUUID;FieldName;FieldDescription;IsKeyField;Sequence;IsForeignField;ForeignField;FieldLength;FieldType;FieldDecimal
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2001;HeaderId;Header ID;true;10;false;;40;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3002;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2001;DocumentNo;Document Number;false;20;false;;40;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3003;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2001;HeaderName;Header Name;false;30;false;;100;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3011;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2002;HeaderId;Header ID;true;10;true;HeaderId;40;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3012;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2002;ItemNo;Item Number;true;20;false;;20;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3013;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2002;MaterialCode;Material Code;false;30;false;;40;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3014;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2002;Quantity;Item Quantity;false;40;false;;13;DECIMAL;3
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3021;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2003;HeaderId;Header ID;true;10;true;HeaderId;40;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3022;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2003;ItemNo;Item Number;true;20;true;ItemNo;20;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3023;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2003;ScheduleLine;Schedule Line;true;30;false;;10;INTEGER;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3024;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2003;DeliveryDate;Delivery Date;false;40;false;;10;DATE;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3025;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1001;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2003;Quantity;Schedule Quantity;false;50;false;;13;DECIMAL;3
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3031;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1002;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2004;RecordId;Record ID;true;10;false;;40;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3032;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1002;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2004;Description;Description;false;20;false;;255;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3033;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1002;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2004;Amount;Amount;false;30;false;;13;DECIMAL;3
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3041;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1003;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2005;field_str01;Field String 01;true;10;false;;10;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3042;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1003;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2005;field_str02;Field String 02;false;20;false;;20;STRING;
+3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a3043;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a1003;3e8a5cb7-7bf3-4f73-9f87-9e5f7d8a2005;field_dec_01;Field Decimal 01;false;30;false;;13;DECIMAL;3

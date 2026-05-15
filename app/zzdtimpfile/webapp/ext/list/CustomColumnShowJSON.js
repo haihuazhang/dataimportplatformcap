@@ -1,6 +1,6 @@
 sap.ui.define([
     "zzdtimpfile/ext/control/json/json-viewer"
-], function () {
+], function (jsonViewer) {
     "use strict";
 
     var BASE_WIDTH_REM = 50;
@@ -82,11 +82,9 @@ sap.ui.define([
 
     return {
         previewButtonPressed: function (oEvent) {
-            // MessageToast.show("Button pressed for item " + oEvent.getSource().getBindingContext().getObject().ID);
             if (oEvent.getSource().getBindingContext()) {
                 var sJson = oEvent.getSource().getBindingContext().getProperty("DataJson");
                 var oJSON = JSON.parse(sJson);
-
 
                 this.pDialog ??= this.loadFragment({
                     name: "zzdtimpfile.ext.list.JSONViewDialog"
@@ -95,9 +93,8 @@ sap.ui.define([
                     setupAutoResize(oDialog);
                     oDialog.setContentWidth(BASE_WIDTH_REM + "rem");
                     oDialog.setContentHeight(BASE_HEIGHT_REM + "rem");
-                    
+
                     sap.ui.getCore().byId("jsonViewer").setContent(
-                        // viewers.default.toJSON(oJSON)
                         jsonViewer(oJSON, false)
                     );
 
@@ -105,9 +102,9 @@ sap.ui.define([
                     oDialog.open();
                 });
 
-                this.onJSONViewDialogClose = function (oEvent) {
+                this.onJSONViewDialogClose = function () {
                     this.pDialog.then((oDialog) => oDialog.close());
-                }
+                };
             }
         }
     };
