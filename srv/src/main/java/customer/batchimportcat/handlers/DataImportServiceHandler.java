@@ -12,11 +12,13 @@ import com.sap.cds.ResultBuilder;
 import com.sap.cds.ql.cqn.CqnPredicate;
 import com.sap.cds.ql.cqn.CqnSelect;
 import com.sap.cds.reflect.CdsModel;
+import com.sap.cds.services.EventContext;
 import com.sap.cds.services.cds.CdsCreateEventContext;
 import com.sap.cds.services.cds.CdsReadEventContext;
 import com.sap.cds.services.cds.CqnService;
 import com.sap.cds.services.changeset.ChangeSetContext;
 import com.sap.cds.services.changeset.ChangeSetListener;
+import com.sap.cds.services.draft.DraftService;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.On;
@@ -54,7 +56,21 @@ public class DataImportServiceHandler implements EventHandler {
     }
 
     @After(event = CqnService.EVENT_CREATE, entity = BatchImportFile_.CDS_NAME)
-    public void callBatchJob(Stream<BatchImportFile> batchImportFiles, CdsCreateEventContext context) {
+    public void callBatchJobAfterCreate(Stream<BatchImportFile> batchImportFiles, CdsCreateEventContext context) {
+        callBatchJobAfterDraftActivation(batchImportFiles, context, context.getCqn().hints());
+    }
+
+    // @After(event = CqnService.EVENT_UPDATE, entity = BatchImportFile_.CDS_NAME)
+    // public void callBatchJobAfterUpdate(Stream<BatchImportFile> batchImportFiles, CdsUpdateEventContext context) {
+    //     callBatchJobAfterDraftActivation(batchImportFiles, context, context.getCqn().hints());
+    // }
+
+    private void callBatchJobAfterDraftActivation(Stream<BatchImportFile> batchImportFiles, EventContext context,
+            Map<String, Object> cqnHints) {
+        if (!isDraftActivation(cqnHints)) {
+            return;
+        }
+
         List<String> fileUUIDs = batchImportFiles
                 .filter(file -> !Boolean.FALSE.equals(file.getIsActiveEntity()))
                 .map(BatchImportFile::getId)
@@ -79,6 +95,10 @@ public class DataImportServiceHandler implements EventHandler {
                 }
             }
         });
+    }
+
+    private boolean isDraftActivation(Map<String, Object> cqnHints) {
+        return cqnHints != null && Boolean.TRUE.equals(cqnHints.get(DraftService.EVENT_DRAFT_SAVE));
     }
 
     @On(event = CqnService.EVENT_READ, entity = ImportStructure_.CDS_NAME)
