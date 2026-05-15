@@ -1,25 +1,10 @@
 # ---
 spring:
   profiles:
-    active: pg
+    default: pg
   batch:
     job:
       enabled: false
-batchimport:
-  task:
-    launcher-type: local
-    host-app: batchimportcat-batch-task
-    local:
-      shell: /bin/zsh
-      batch-task-jar: batch-task/target/batchimportcat-batch-task-exec.jar
-    cloudfoundry:
-      api-host: api.cf.us10-001.hana.ondemand.com
-      organization: a83421e9trial
-      space: dev
-      username: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_USERNAME:}
-      password: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_PASSWORD:}
-      skip-ssl-validation: false
-      command-template: META-INF/.sap_java_buildpack/java_main/start.sh org.springframework.boot.loader.launch.JarLauncher --fileUUID={fileUUID} --executionUUID={executionUUID}
 # ---
 # spring:
 # #   config.activate.on-profile: default
@@ -70,6 +55,21 @@ spring:
 cds:
   dataSource:
     auto-config.enabled: true
+batchimport:
+  task:
+    launcher-type: cloudfoundry
+    host-app: batchimportcat-batch-task
+    memory-mb: 1024
+    disk-mb: 1024
+    timeout: 1h
+    cloudfoundry:
+      api-host: api.cf.us10-001.hana.ondemand.com
+      organization: a83421e9trial
+      space: dev
+      username: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_USERNAME:}
+      password: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_PASSWORD:}
+      skip-ssl-validation: false
+      command-template: "{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}"
 
 ---
 spring:
@@ -89,6 +89,16 @@ spring:
 cds:
   dataSource:
     auto-config.enabled: true
+batchimport:
+  task:
+    launcher-type: local
+    host-app: batchimportcat-batch-task
+    memory-mb: 1024
+    disk-mb: 1024
+    timeout: 1h
+    local:
+      shell: /bin/zsh
+      batch-task-jar: batch-task/target/batchimportcat-batch-task-exec.jar
 
 ---
 spring:
@@ -110,6 +120,21 @@ spring:
 cds:
   dataSource:
     auto-config.enabled: true
+batchimport:
+  task:
+    launcher-type: cloudfoundry
+    host-app: batchimportcat-batch-task
+    memory-mb: 1024
+    disk-mb: 1024
+    timeout: 1h
+    cloudfoundry:
+      api-host: api.cf.us10-001.hana.ondemand.com
+      organization: a83421e9trial
+      space: dev
+      username: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_USERNAME:}
+      password: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_PASSWORD:}
+      skip-ssl-validation: false
+      command-template: "{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}"
 
 
 # ---

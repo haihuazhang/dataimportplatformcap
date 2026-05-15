@@ -44,9 +44,6 @@ public class TaskLaunchProperties {
         private boolean skipSslValidation;
         @Deprecated
         private String cfBinary = "cf";
-        private String commandTemplate =
-                "META-INF/.sap_java_buildpack/java_main/start.sh "
-                        + "org.springframework.boot.loader.launch.JarLauncher "
-                        + "--fileUUID={fileUUID} --executionUUID={executionUUID}";
+        private String commandTemplate = "{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}";
     }
 }
