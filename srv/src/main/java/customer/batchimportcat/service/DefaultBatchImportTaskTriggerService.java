@@ -42,7 +42,8 @@ public class DefaultBatchImportTaskTriggerService implements BatchImportTaskTrig
     @Override
     public BatchImportExecutionRef trigger(String fileUUID) {
         String configUUID = batchImportFileCqnService.loadRequiredConfigUUID(fileUUID);
-        BatchImportConfigLaunchContext configContext = batchImportConfigCqnService.loadRequiredLaunchContext(configUUID);
+        BatchImportConfigLaunchContext configContext = batchImportConfigCqnService
+                .loadRequiredLaunchContext(configUUID);
         BatchImportFileLaunchContext fileContext = new BatchImportFileLaunchContext(
                 fileUUID,
                 configUUID,
@@ -61,7 +62,7 @@ public class DefaultBatchImportTaskTriggerService implements BatchImportTaskTrig
             if (!launchResult.accepted()) {
                 String failureReason = firstNonBlank(launchResult.failureReason(), launchResult.rawState(),
                         "Task launch was rejected.");
-                batchImportExecutionCqnService.markLaunchFailed(executionUUID, failureReason);
+                batchImportExecutionCqnService.markLaunchRejected(executionUUID, launchResult, failureReason);
                 batchImportFileCqnService.markError(fileUUID, null);
                 return new BatchImportExecutionRef(executionUUID, fileUUID, fileContext.processKey(),
                         TaskState.FAILED.value());

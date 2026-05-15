@@ -35,13 +35,13 @@ class DefaultBatchImportTaskTriggerServiceTest {
                 new BatchImportConfigLaunchContext("config-1", "PROCESS_A", "OBJ", "Object A"));
         RecordingProcessorArtifactCqnService processorArtifactCqnService = new RecordingProcessorArtifactCqnService(
                 new ProcessorArtifactBinding("artifact-1", "PROCESS_A", "1.0.0", "Artifact", "abc", "demo.Entry"));
-        RecordingBatchImportExecutionCqnService batchImportExecutionCqnService = new RecordingBatchImportExecutionCqnService(
-                calls,
-                "exec-1");
+        RecordingBatchImportExecutionCqnService batchImportExecutionCqnService =
+                new RecordingBatchImportExecutionCqnService(calls, "exec-1");
         RecordingTaskLaunchRequestFactory requestFactory = new RecordingTaskLaunchRequestFactory();
         TaskLaunchService launchService = request -> {
             calls.add("launch:" + request.executionUUID() + ":" + request.fileUUID());
-            return new TaskLaunchResult(true, "local", "task-1", request.taskName(), Instant.now(), "SUBMITTED", null);
+            return new TaskLaunchResult(true, "local", "task-1", request.taskName(), request.command(),
+                    Instant.now(), "SUBMITTED", null);
         };
 
         DefaultBatchImportTaskTriggerService service = new DefaultBatchImportTaskTriggerService(
@@ -57,10 +57,10 @@ class DefaultBatchImportTaskTriggerServiceTest {
         assertEquals("exec-1", ref.executionUUID());
         assertEquals(TaskState.SUBMITTED.value(), ref.taskState());
         assertEquals(List.of(
-            "create:exec-1:file-1:artifact-1:local",
+                "create:exec-1:file-1:artifact-1:local",
                 "queued:file-1:null",
                 "launch:exec-1:file-1",
-                "accepted:exec-1:task-1"),
+                "accepted:exec-1:task-1:echo launch"),
                 calls);
     }
 
@@ -74,15 +74,15 @@ class DefaultBatchImportTaskTriggerServiceTest {
                 new BatchImportConfigLaunchContext("config-2", "PROCESS_B", "OBJ", "Object B"));
         RecordingProcessorArtifactCqnService processorArtifactCqnService = new RecordingProcessorArtifactCqnService(
                 new ProcessorArtifactBinding("artifact-2", "PROCESS_B", "2.0.0", "Artifact", "def", "demo.Entry"));
-        RecordingBatchImportExecutionCqnService batchImportExecutionCqnService = new RecordingBatchImportExecutionCqnService(
-                calls,
-                "exec-2");
+        RecordingBatchImportExecutionCqnService batchImportExecutionCqnService =
+                new RecordingBatchImportExecutionCqnService(calls, "exec-2");
         RecordingTaskLaunchRequestFactory requestFactory = new RecordingTaskLaunchRequestFactory();
         TaskLaunchService launchService = request -> new TaskLaunchResult(
                 false,
                 "local",
                 null,
                 request.taskName(),
+                request.command(),
                 Instant.now(),
                 "launcher rejected",
                 "launcher rejected");
@@ -100,9 +100,9 @@ class DefaultBatchImportTaskTriggerServiceTest {
         assertEquals("exec-2", ref.executionUUID());
         assertEquals(TaskState.FAILED.value(), ref.taskState());
         assertEquals(List.of(
-            "create:exec-2:file-2:artifact-2:local",
+                "create:exec-2:file-2:artifact-2:local",
                 "queued:file-2:null",
-                "failed:exec-2:launcher rejected",
+                "rejected:exec-2:echo launch:launcher rejected",
                 "error:file-2:null"),
                 calls);
     }
@@ -172,8 +172,8 @@ class DefaultBatchImportTaskTriggerServiceTest {
         }
 
         @Override
-        public String createSubmittedExecution(BatchImportFileLaunchContext fileContext, ProcessorArtifactBinding artifact,
-                String taskHostApp, String launcherType) {
+        public String createSubmittedExecution(BatchImportFileLaunchContext fileContext,
+                ProcessorArtifactBinding artifact, String taskHostApp, String launcherType) {
             calls.add("create:" + executionUUID + ":" + fileContext.fileUUID() + ":" + artifact.id()
                     + ":" + launcherType);
             return executionUUID;
@@ -181,7 +181,13 @@ class DefaultBatchImportTaskTriggerServiceTest {
 
         @Override
         public void markLaunchAccepted(String executionUUID, TaskLaunchResult launchResult) {
-            calls.add("accepted:" + executionUUID + ":" + launchResult.platformTaskId());
+            calls.add("accepted:" + executionUUID + ":" + launchResult.platformTaskId()
+                    + ":" + launchResult.command());
+        }
+
+        @Override
+        public void markLaunchRejected(String executionUUID, TaskLaunchResult launchResult, String failureReason) {
+            calls.add("rejected:" + executionUUID + ":" + launchResult.command() + ":" + failureReason);
         }
 
         @Override

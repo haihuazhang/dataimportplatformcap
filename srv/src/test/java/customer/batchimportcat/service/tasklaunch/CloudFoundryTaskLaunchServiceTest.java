@@ -59,6 +59,7 @@ class CloudFoundryTaskLaunchServiceTest {
         assertTrue(result.accepted());
         assertEquals("7", result.platformTaskId());
         assertEquals("batch-import-123456", result.platformTaskName());
+        assertEquals("run command", result.command());
         assertEquals("PENDING", result.rawState());
         verify(applications).runTask(RunApplicationTaskRequest.builder()
                 .applicationName("batchimportcat-batch-task")
@@ -81,6 +82,7 @@ class CloudFoundryTaskLaunchServiceTest {
 
         assertFalse(result.accepted());
         assertEquals("cloudfoundry", result.launcherType());
+        assertEquals("run command", result.command());
         assertEquals("batchimport.task.cloudfoundry.password is required for Cloud Foundry task launch.",
                 result.failureReason());
     }
@@ -108,6 +110,7 @@ class CloudFoundryTaskLaunchServiceTest {
         TaskLaunchResult result = service.launch(requestWithDefaultCommandPlaceholder());
 
         assertTrue(result.accepted());
+        assertEquals("default command --fileUUID=file-1 --executionUUID=execution-1", result.command());
         verify(applications).runTask(RunApplicationTaskRequest.builder()
                 .applicationName("batchimportcat-batch-task")
                 .command("default command --fileUUID=file-1 --executionUUID=execution-1")

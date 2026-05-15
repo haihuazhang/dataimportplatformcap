@@ -61,24 +61,25 @@ public class CloudFoundryTaskLaunchService implements TaskLaunchService {
 
     @Override
     public TaskLaunchResult launch(TaskLaunchRequest request) {
+        String command = request.command();
         try {
             TaskLaunchProperties.CloudFoundry cloudFoundry = properties.getCloudfoundry();
             validateCloudFoundryConfiguration(cloudFoundry);
             CloudFoundryConnection connection = connectionFactory.apply(cloudFoundry);
-            String command = resolveCommand(connection, cloudFoundry, request);
+            command = resolveCommand(connection, cloudFoundry, request);
             Task task = connection.operations()
                     .applications()
                     .runTask(buildRunTaskRequest(request, command))
                     .block(launchTimeout(request));
             if (task == null) {
-                return new TaskLaunchResult(false, request.launcherType(), null, request.taskName(), Instant.now(),
-                        null, "Cloud Foundry task creation returned no task.");
+                return new TaskLaunchResult(false, request.launcherType(), null, request.taskName(), command,
+                        Instant.now(), null, "Cloud Foundry task creation returned no task.");
             }
-            return new TaskLaunchResult(true, request.launcherType(), platformTaskId(task), task.getName(),
+            return new TaskLaunchResult(true, request.launcherType(), platformTaskId(task), task.getName(), command,
                     Instant.now(), task.getState() == null ? null : task.getState().getValue(), null);
         } catch (Exception exception) {
-            return new TaskLaunchResult(false, request.launcherType(), null, request.taskName(), Instant.now(), null,
-                    summarizeFailure(exception));
+            return new TaskLaunchResult(false, request.launcherType(), null, request.taskName(), command,
+                    Instant.now(), null, summarizeFailure(exception));
         }
     }
 
