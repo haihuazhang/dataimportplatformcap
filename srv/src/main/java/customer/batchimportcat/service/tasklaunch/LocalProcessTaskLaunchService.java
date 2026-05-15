@@ -10,7 +10,8 @@ import customer.batchimportcat.model.TaskLaunchRequest;
 import customer.batchimportcat.model.TaskLaunchResult;
 
 @Service
-@ConditionalOnProperty(prefix = "batchimport.task", name = "launcher-type", havingValue = "local", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "batchimport.task", name = "launcher-type", havingValue = "local",
+        matchIfMissing = true)
 public class LocalProcessTaskLaunchService implements TaskLaunchService {
     private final TaskLaunchProperties properties;
 
@@ -34,6 +35,7 @@ public class LocalProcessTaskLaunchService implements TaskLaunchService {
                     request.launcherType(),
                     String.valueOf(process.pid()),
                     request.taskName(),
+                    request.command(),
                     Instant.now(),
                     "SUBMITTED",
                     null);
@@ -43,6 +45,7 @@ public class LocalProcessTaskLaunchService implements TaskLaunchService {
                     request.launcherType(),
                     null,
                     request.taskName(),
+                    request.command(),
                     Instant.now(),
                     null,
                     exception.getMessage());

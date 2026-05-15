@@ -271,6 +271,7 @@ annotate DataImportService.BatchImportExecution with @UI: {
         {Value: LauncherType},
         {Value: TaskState},
         {Value: TaskName},
+        {Value: TaskCommand},
         // {Value: JobInstanceId},
         {
             Value         : JobInstanceId,

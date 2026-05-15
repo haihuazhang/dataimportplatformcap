@@ -119,6 +119,7 @@ entity BatchImportExecution : cuid, managed {
     LauncherType         : String(30)  @Common.Label:'{i18n>zzdt_LauncherType}';
     TaskId               : String(100) @Common.Label:'{i18n>zzdt_TaskId}';
     TaskName             : String(255) @Common.Label:'{i18n>zzdt_TaskName}';
+    TaskCommand          : LargeString @Common.Label:'{i18n>zzdt_TaskCommand}';
     TaskState            : String(30)  @Common.Label:'{i18n>zzdt_TaskState}';
     FailureReason        : LargeString @Common.Label:'{i18n>zzdt_FailureReason}';
     JobInstanceId        : String(100) @Common.Label:'{i18n>zzdt_JobInstanceId}';

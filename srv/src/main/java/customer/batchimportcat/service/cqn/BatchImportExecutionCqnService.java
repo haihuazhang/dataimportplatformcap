@@ -54,7 +54,23 @@ public class BatchImportExecutionCqnService {
         data.put("LauncherType", launchResult.launcherType());
         data.put("TaskId", launchResult.platformTaskId());
         data.put("TaskName", launchResult.platformTaskName());
+        data.put("TaskCommand", launchResult.command());
         data.put("FailureReason", null);
+
+        CqnUpdate update = Update.entity(BatchImportExecution_.class)
+                .data(data)
+                .where(execution -> execution.ID().eq(executionUUID));
+        dataImportService.run(update);
+    }
+
+    public void markLaunchRejected(String executionUUID, TaskLaunchResult launchResult, String failureReason) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("TaskState", TaskState.FAILED.value());
+        data.put("LauncherType", launchResult.launcherType());
+        data.put("TaskName", launchResult.platformTaskName());
+        data.put("TaskCommand", launchResult.command());
+        data.put("FailureReason", failureReason);
+        data.put("FinishedAt", Instant.now());
 
         CqnUpdate update = Update.entity(BatchImportExecution_.class)
                 .data(data)

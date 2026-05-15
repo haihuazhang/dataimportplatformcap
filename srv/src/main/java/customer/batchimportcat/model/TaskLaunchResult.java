@@ -7,6 +7,7 @@ public record TaskLaunchResult(
         String launcherType,
         String platformTaskId,
         String platformTaskName,
+        String command,
         Instant acceptedAt,
         String rawState,
         String failureReason) {
