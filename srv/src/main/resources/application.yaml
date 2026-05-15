@@ -122,19 +122,19 @@ cds:
     auto-config.enabled: true
 batchimport:
   task:
-    launcher-type: cloudfoundry
-    host-app: batchimportcat-batch-task
+    launcher-type: "${BATCHIMPORT_TASK_LAUNCHER_TYPE:cloudfoundry}"
+    host-app: "${BATCHIMPORT_TASK_HOST_APP:batchimportcat-batch-task}"
     memory-mb: 1024
     disk-mb: 1024
     timeout: 1h
     cloudfoundry:
-      api-host: api.cf.us10-001.hana.ondemand.com
-      organization: a83421e9trial
-      space: dev
+      api-host: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_API_HOST:}
+      organization: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_ORGANIZATION:}
+      space: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_SPACE:}
       username: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_USERNAME:}
       password: ${BATCHIMPORT_TASK_CLOUDFOUNDRY_PASSWORD:}
       skip-ssl-validation: false
-      command-template: "{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}"
+      command-template: "${BATCHIMPORT_TASK_CLOUDFOUNDRY_COMMAND_TEMPLATE:{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}}"
 
 
 # ---

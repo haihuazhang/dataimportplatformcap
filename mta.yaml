@@ -18,6 +18,11 @@ modules:
       SPRING_PROFILES_ACTIVE: cloud
       BATCHIMPORT_TASK_LAUNCHER_TYPE: cloudfoundry
       BATCHIMPORT_TASK_HOST_APP: batchimportcat-batch-task
+      BATCHIMPORT_TASK_CLOUDFOUNDRY_API_HOST: api.cf.us10-001.hana.ondemand.com
+      BATCHIMPORT_TASK_CLOUDFOUNDRY_ORGANIZATION: ${org}
+      BATCHIMPORT_TASK_CLOUDFOUNDRY_SPACE: ${space}
+      BATCHIMPORT_TASK_CLOUDFOUNDRY_USERNAME: haihua.zhang@hand-china.com
+      BATCHIMPORT_TASK_CLOUDFOUNDRY_PASSWORD: P@ssw0rd
       BATCHIMPORT_TASK_CLOUDFOUNDRY_COMMAND_TEMPLATE: "{defaultCommand} --fileUUID={fileUUID} --executionUUID={executionUUID}"
       JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
       JBP_CONFIG_SAP_MACHINE_JRE: "{ version: 21.+ }"
