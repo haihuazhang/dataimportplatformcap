@@ -1,6 +1,5 @@
 package customer.batchimportcat.service.cqn.impl;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +17,8 @@ import com.sap.cds.ql.Update;
 import com.sap.cds.ql.cqn.CqnInsert;
 import com.sap.cds.ql.cqn.CqnUpdate;
 import com.sap.cds.services.persistence.PersistenceService;
+import com.sap.cds.services.runtime.CdsRuntime;
+
 import customer.batchimportcat.batch.dynamic.dto.BatchImportConfigData;
 import customer.batchimportcat.batch.dynamic.types.BatchImportOriginalDataRecord;
 import customer.batchimportcat.batch.dynamic.types.BatchImportProcessMessage;
@@ -33,20 +34,30 @@ public class BatchImportDBCqnService implements BatchImportPersistenceService {
     private static final String MESSAGE_ENTITY = "zzdt.BatchImportMessage";
 
     private final PersistenceService db;
+    private final CdsRuntime runtime;
 
-    public BatchImportDBCqnService(PersistenceService db) {
+    public BatchImportDBCqnService(PersistenceService db, CdsRuntime runtime) {
         this.db = db;
+        this.runtime = runtime;
     }
 
     @Override
     public byte[] loadFileContent(String fileUUID) {
-        Row fileRow = readFileRow(fileUUID);
-        return readBinaryContent(fileRow, "Attachment", "Failed to read file content for " + fileUUID + ".");
+        return CdsChangeSetExecutor.runTransactional(runtime, () -> {
+            Row fileRow = readFileContentRow(fileUUID);
+            return readBinaryContent(fileRow, "Attachment",
+                    "Failed to read file content for " + fileUUID + ".");
+        });
     }
 
     @Override
     public BatchImportConfigData loadConfigData(String fileUUID) {
-        Row fileRow = readFileRow(fileUUID);
+        return CdsChangeSetExecutor.runTransactional(runtime,
+                () -> loadConfigDataInChangeSet(fileUUID));
+    }
+
+    private BatchImportConfigData loadConfigDataInChangeSet(String fileUUID) {
+        Row fileRow = readFileConfigRow(fileUUID);
         String configUUID = String.valueOf(fileRow.get("ConfigUUID"));
 
         Result configResult = db.run(Select.from(CONFIG_ENTITY).byId(configUUID));
@@ -124,8 +135,16 @@ public class BatchImportDBCqnService implements BatchImportPersistenceService {
         db.run(update);
     }
 
-    private Row readFileRow(String fileUUID) {
-        Result fileResult = db.run(Select.from(FILE_ENTITY).byId(fileUUID));
+    private Row readFileContentRow(String fileUUID) {
+        return readFileRow(Select.from(FILE_ENTITY).columns("Attachment").byId(fileUUID), fileUUID);
+    }
+
+    private Row readFileConfigRow(String fileUUID) {
+        return readFileRow(Select.from(FILE_ENTITY).columns("ConfigUUID").byId(fileUUID), fileUUID);
+    }
+
+    private Row readFileRow(Select<?> select, String fileUUID) {
+        Result fileResult = db.run(select);
         if (fileResult.rowCount() <= 0) {
             throw new IllegalStateException("Batch import file " + fileUUID + " was not found.");
         }
@@ -141,14 +160,7 @@ public class BatchImportDBCqnService implements BatchImportPersistenceService {
     }
 
     private byte[] readBinaryContent(Row row, String key, String errorMessage) {
-        try (InputStream inputStream = (InputStream) row.get(key)) {
-            if (inputStream == null) {
-                throw new IllegalStateException(errorMessage);
-            }
-            return inputStream.readAllBytes();
-        } catch (Exception exception) {
-            throw new IllegalStateException(errorMessage, exception);
-        }
+        return BinaryContentReader.readRequired(row.get(key), errorMessage);
     }
 
     private List<Map<String, Serializable>> toSerializableRows(Result result) {

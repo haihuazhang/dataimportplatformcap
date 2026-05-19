@@ -202,6 +202,12 @@ annotate DataImportService.BatchImportFile with @(UI: {
 });
 
 annotate DataImportService.ProcessorArtifact with @UI: {
+    HeaderInfo         : {
+        TypeName      : 'Processor Artifact',
+        TypeNamePlural: 'Processor Artifacts',
+        Title         : {Value: ProcessKey},
+        Description   : {Value: Version}
+    },
     Facets             : [
         {
             $Type : 'UI.ReferenceFacet',
@@ -240,7 +246,7 @@ annotate DataImportService.ProcessorArtifact with @UI: {
     FieldGroup #Media  : {
         $Type: 'UI.FieldGroupType',
         Data : [
-            // {Value: MediaFileName},
+            {Value: MediaFileName},
             // {Value: MediaMimeType},
             {Value: MediaContent},
             {Value: MediaSize},
@@ -253,7 +259,8 @@ annotate DataImportService.ProcessorArtifact with @UI: {
         {Value: Description},
         {Value: EntryPointClass},
         {Value: ArtifactStorageType},
-        {Value: MediaContent},
+        {Value: MediaFileName},
+        {Value: MediaSize},
         {Value: Enabled}
     ],
     SelectionFields    : [
@@ -261,6 +268,14 @@ annotate DataImportService.ProcessorArtifact with @UI: {
         Version,
         Enabled
     ]
+};
+
+annotate DataImportService.ProcessorArtifact with {
+    ID               @UI.Hidden;
+    MediaMimeType    @UI.Hidden;
+    MediaUrl         @UI.Hidden;
+    MediaSize        @Core.Computed;
+    ArtifactChecksum @Core.Computed;
 };
 
 annotate DataImportService.BatchImportExecution with @UI: {

@@ -50,7 +50,7 @@ public class SingleFileBatchLaunchService {
                     jobExecution.getExecutionContext().get(Constant.HAS_PROCESSING_ERRORS));
             if (jobExecution.getStatus().isUnsuccessful() || hasProcessingErrors) {
                 taskExecutionLifecycleService.markFailed(executionUUID, jobExecution.getJobId(),
-                        "Batch import job finished unsuccessfully.");
+                        summarizeJobFailure(jobExecution, hasProcessingErrors));
                 return false;
             }
 
@@ -63,12 +63,45 @@ public class SingleFileBatchLaunchService {
         }
     }
 
-    private String summarizeFailure(Exception exception) {
+    private String summarizeJobFailure(JobExecution jobExecution, boolean hasProcessingErrors) {
+        for (Throwable exception : jobExecution.getAllFailureExceptions()) {
+            String failureSummary = summarizeFailure(exception);
+            if (failureSummary != null && !failureSummary.isBlank()) {
+                return failureSummary;
+            }
+        }
+
+        String exitDescription = jobExecution.getExitStatus() == null
+                ? null
+                : jobExecution.getExitStatus().getExitDescription();
+        if (exitDescription != null && !exitDescription.isBlank()) {
+            return exitDescription;
+        }
+
+        if (hasProcessingErrors) {
+            return "Batch import processor reported row/object errors.";
+        }
+        return "Batch import job finished unsuccessfully.";
+    }
+
+    private String summarizeFailure(Throwable exception) {
+        String topLevelMessage = exception.getMessage();
         Throwable current = exception;
         while (current.getCause() != null) {
             current = current.getCause();
         }
-        String message = current.getMessage();
-        return message == null || message.isBlank() ? current.getClass().getSimpleName() : message;
+        String rootMessage = current.getMessage();
+        if (topLevelMessage != null && !topLevelMessage.isBlank()
+                && rootMessage != null && !rootMessage.isBlank()
+                && current != exception && !topLevelMessage.equals(rootMessage)) {
+            return topLevelMessage + " Root cause: " + rootMessage;
+        }
+        if (topLevelMessage != null && !topLevelMessage.isBlank()) {
+            return topLevelMessage;
+        }
+        if (rootMessage != null && !rootMessage.isBlank()) {
+            return rootMessage;
+        }
+        return current.getClass().getSimpleName();
     }
 }
